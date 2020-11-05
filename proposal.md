@@ -1,16 +1,12 @@
----
-title: "proposal"
-output: github_document
----
+proposal
+================
 
+**The group members (names and UNIs)**:
 
-**The group members (names and UNIs)**:  
-
-*   Nancy Fang nf2466  
-*   Maggie (Mengyuan) Li ml4424  
-*   Rachel Tao rht2112  
-*   Linh Tran lmt2203  
-
+  - Nancy Fang nf2466  
+  - Maggie (Mengyuan) Li ml4424  
+  - Rachel Tao rht2112  
+  - Linh Tran lmt2203
 
 **The tentative project title**: Abortion access across the US
 
