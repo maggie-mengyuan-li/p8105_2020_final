@@ -1,0 +1,21 @@
+---
+title: "proposal"
+author: "Maggie Li (ml4424)"
+date: "11/5/2020"
+output: github_document
+---
+
+
+The group members (names and UNIs) 
+
+The tentative project title
+
+The motivation for this project (Maggie)
+
+The intended final products (Rachel)
+
+The anticipated data sources (Nancy)
+
+The planned analyses / visualizations / coding challenges (Nancy)
+
+The planned timeline (Linh)
