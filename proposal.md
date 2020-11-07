@@ -1,21 +1,34 @@
 proposal
 ================
 
-**The group members (names and UNIs)**:
+**Group members (names and UNIs)**:
 
   - Nancy Fang nf2466  
   - Maggie (Mengyuan) Li ml4424  
   - Rachel Tao rht2112  
   - Linh Tran lmt2203
 
-**The tentative project title**: Abortion access across the US
+**Tentative project title**: Abortion access across the US
 
-**The motivation for this project** (Maggie)
+**Motivation for this project** (Maggie)
 
-**The intended final products** (Rachel)
+**Intended final products** (Rachel)
 
-**The anticipated data sources** (Nancy)
+We will build a website that can be used to further public understanding
+of abortion access in the United States, including visualizations of
+data from the Guttmacher Institute’s 2014 Abortion Patient Survey. We
+will to focus on how transportation time from residence location to
+abortion facility differs across states and between different
+demographic groups. We plan to create interactive data visualizations
+showing:
 
-**The planned analyses / visualizations / coding challenges** (Nancy)
+  - Distribution of transportation time by state (histograms or density
+    ridges plots)
+  - Gestational age and transportation time (scatterplot)
+  - Distribution of transportation time by race (boxplot or violin plot)
+
+**Anticipated data sources** (Nancy)
+
+**Planned analyses / visualizations / coding challenges** (Nancy)
 
 **The planned timeline** (Linh)
