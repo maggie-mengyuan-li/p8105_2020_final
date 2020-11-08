@@ -33,3 +33,10 @@ In addition, we will run linear regression analyses to examine the relationship 
 **Planned analyses / visualizations / coding challenges** (Nancy)
 
 **The planned timeline** (Linh)
+
+    + Nov 7th: Submit project proposal
+    + Nov 12th: Finalize data sources and start working on questions of interest
+    + Nov 12-20th: Work on exploratory analysis (visualization, summaries and statistical analyses), discuss major findings
+    + Nov 20-Dec 2nd: Create a webpage and screencast
+    + Dec 2-5: Final review 
+    + Dec 5th: submit final project
