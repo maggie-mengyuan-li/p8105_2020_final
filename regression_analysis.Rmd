@@ -14,6 +14,8 @@ library(broom)
 library(plotly)
 library(devtools)
 library(leaflet)
+library(modelr)
+library(mgcv)
 
 knitr::opts_chunk$set(
 	fig.width = 6, 
@@ -143,7 +145,7 @@ top_expend_abortion =
          showlegend = FALSE)
 
 subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
-        titleX = TRUE, titleY = FALSE)
+        titleX = FALSE, titleY = FALSE)
   
 ```
 
@@ -152,7 +154,36 @@ subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
 
 ### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?
 
+```{r}
+merge_data = 
+  merge_data %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive")))
+
+hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data)
+summary(hostility_model)
+```
+
+
+
+```{r, error = TRUE}
+models_results_df = 
+  merge_data %>% 
+  nest(data = -state_id) %>% 
+  mutate(
+    models = map(.x = data, ~glm(abortion_rate_15_44_state ~ total_expend_abortion + counties_no_provider, data = .x, family = binomial)),
+    results = map(models, broom::tidy)
+  ) %>% 
+  select(state_id, results) %>% 
+  unnest(results) %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(state_id, term, OR, starts_with("CI"))
+
+```
+
 
 ### Relationship between teen birth rate/abortion rate and insurance status
-
 
