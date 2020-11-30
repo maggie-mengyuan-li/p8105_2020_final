@@ -122,23 +122,28 @@ merge_data %>%
 ## Top 10 states with the highest abortion rate
 
 ```{r}
-merge_data %>% 
+top_abortion_rate =
+  merge_data %>% 
   top_n(10, abortion_rate_15_44_state) %>% 
   mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
-  plot_ly(x = ~abortion_rate_15_44_state, y = ~state_id, type = 'bar', orientation = 'h', width = 900, height = 700) %>% 
+  plot_ly(x = ~abortion_rate_15_44_state, y = ~state_id, type = 'bar', orientation = 'h', width = 900, height = 700, marker = list(color = c('rgba(222,45,38,1)', 'rgba(222,45,38,1)', 'rgba(222,45,38,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(222,45,38,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)'))) %>% 
   layout(title = "Top 10 states with highest abortion rate",
          xaxis = list(title = "Abortion rate"),
          yaxis = list(title = "State"),
          showlegend = FALSE)
 
-merge_data %>% 
+top_expend_abortion = 
+  merge_data %>% 
   top_n(10, total_expend_abortion) %>% 
   mutate(state_id = fct_reorder(state_id, total_expend_abortion)) %>% 
-  plot_ly(x = ~total_expend_abortion, y = ~state_id, type = 'bar', orientation = 'h', width = 900, height = 700) %>% 
+  plot_ly(x = ~total_expend_abortion, y = ~state_id, type = 'bar', orientation = 'h', width = 900, height = 700, marker = list(color = c('rgba(222,45,38,1)', 'rgba(222,45,38,1)', 'rgba(204,204,204,1)',  'rgba(222,45,38,1)',  'rgba(222,45,38,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)'))) %>% 
   layout(title = "Top 10 states with highest total expend",
          xaxis = list(title = "total_expend_abortion"),
          yaxis = list(title = "State"),
          showlegend = FALSE)
+
+subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
+        titleX = TRUE, titleY = FALSE)
   
 ```
 
