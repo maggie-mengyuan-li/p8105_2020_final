@@ -177,3 +177,7 @@ merge_data =
    total_expend_abortion  = as.numeric(total_expend_abortion)
     )
 ```
+
+``` r
+write_csv(merge_data, "./data/merge_data.csv")
+```

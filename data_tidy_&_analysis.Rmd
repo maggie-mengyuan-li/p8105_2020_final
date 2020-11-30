@@ -5,6 +5,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(readr)
 library(p8105.datasets)
 knitr::opts_chunk$set(
 	fig.width = 6, 
@@ -140,5 +141,9 @@ merge_data =
     need_bc_under_20  = as.numeric(need_bc_under_20),
    total_expend_abortion  = as.numeric(total_expend_abortion)
     )
+```
+
+```{r}
+write_csv(merge_data, "./data/merge_data.csv")
 ```
 
