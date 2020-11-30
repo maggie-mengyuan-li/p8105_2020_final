@@ -9,8 +9,12 @@ output: html_document
 library(tidyverse)
 library(readr)
 library(ggplot2)
+library(patchwork)
 library(broom)
 library(plotly)
+library(devtools)
+library(leaflet)
+
 knitr::opts_chunk$set(
 	fig.width = 6, 
   fig.asp = .6,
@@ -38,7 +42,7 @@ merge_data = read_csv("data/merge_data.csv")
 ```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
 merge_data %>% 
   mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
-  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, color = state_id)) +
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, fill = state_id)) +
   geom_bar(stat = "identity") +
   labs(
     x = "State",
@@ -48,4 +52,102 @@ merge_data %>%
   theme(legend.position = "none")
 ```
 
-## 
+## Public expenditure by state
+
+```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
+merge_data %>% 
+  mutate(state_id = fct_reorder(state_id, expenditure_rate)) %>% 
+  ggplot(aes(x = state_id, y = expenditure_rate, fill = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Public expenditure per women in need",
+    title = "Rate of public expenditure for women aged 15-44 in need of contraception"
+  ) +
+  theme(legend.position = "none")
+  
+```
+
+
+```{r, fig.height = 12, fig.width = 12, fig.asp = .6}
+abortion_rate = 
+  merge_data %>% 
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, color = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Abortion rate",
+    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
+  ) +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) 
+ 
+
+public_expenditure =
+  merge_data %>% 
+  ggplot(aes(x = state_id, y = expenditure_rate, color = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Public expenditure per women in need",
+    title = "Rate of public expenditure for women aged 15-44 in need of contraception"
+  ) +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
+
+abortion_rate / public_expenditure
+```
+
+## Hostility towards abortion in policy by state and abortion rate
+
+```{r, fig.height = 9, fig.width = 9, fig.asp = .6}
+merge_data %>% 
+  select(state_id, percent_abortion, abortion_rate_15_44_state ,hostility) %>% 
+  mutate(hostility = as.factor(hostility)) %>% 
+  group_by(hostility) %>% 
+  summarize(
+    n = n(),
+    abortion_rate = mean(abortion_rate_15_44_state)
+  ) %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  ggplot(aes(x = hostility, y = abortion_rate, fill = hostility)) +
+  geom_bar(stat = "identity") + 
+  labs(
+    x = "Hostility towards abortion in policy by state",
+    y = "Average rate of abortion by state",
+    title = "Hostility and Abortion Rate"
+  )
+  
+```
+
+
+## Top 10 states with the highest abortion rate
+
+```{r}
+merge_data %>% 
+  top_n(10, abortion_rate_15_44_state) %>% 
+  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
+  plot_ly(x = ~abortion_rate_15_44_state, y = ~state_id, type = 'bar', orientation = 'h', width = 900, height = 700) %>% 
+  layout(title = "Top 10 states with highest abortion rate",
+         xaxis = list(title = "Abortion rate"),
+         yaxis = list(title = "State"),
+         showlegend = FALSE)
+
+merge_data %>% 
+  top_n(10, total_expend_abortion) %>% 
+  mutate(state_id = fct_reorder(state_id, total_expend_abortion)) %>% 
+  plot_ly(x = ~total_expend_abortion, y = ~state_id, type = 'bar', orientation = 'h', width = 900, height = 700) %>% 
+  layout(title = "Top 10 states with highest total expend",
+         xaxis = list(title = "total_expend_abortion"),
+         yaxis = list(title = "State"),
+         showlegend = FALSE)
+  
+```
+
+
+## Statistical analysis
+
+### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?
+
+
+### Relationship between teen birth rate/abortion rate and insurance status
+
+
