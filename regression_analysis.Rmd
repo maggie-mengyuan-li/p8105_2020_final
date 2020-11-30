@@ -1,0 +1,51 @@
+---
+title: "Regression analysis"
+author: "Linh Tran"
+date: "11/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(broom)
+library(plotly)
+knitr::opts_chunk$set(
+	fig.width = 6, 
+  fig.asp = .6,
+  out.width = "90%"
+)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+Load dataset
+
+```{r}
+merge_data = read_csv("data/merge_data.csv")
+```
+
+# Exploratory data analysis
+
+## Rate of abortion by state
+
+```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
+merge_data %>% 
+  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, color = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Abortion rate",
+    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
+  ) +
+  theme(legend.position = "none")
+```
+
+## 
