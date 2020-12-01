@@ -152,7 +152,7 @@ subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
 
 ## Statistical analysis
 
-### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?
+### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/abortion access by state? **ALL MODELS HERE**
 
 ```{r}
 merge_data = 
@@ -185,7 +185,7 @@ bc_fund_model <- lm(abortion_rate_15_44_state ~ expenditure_rate, data = merge_d
 summary(bc_fund_model)
 ```
 
-### Is there a relationship between rate of abortion and contraceptive access by state? 
+### Is there a relationship between rate of abortion and contraceptive access by state? **moved to chunk above**
 
 ```{r}
 bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
