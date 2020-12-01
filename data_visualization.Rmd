@@ -1,0 +1,70 @@
+---
+title: "Spatial Visualization of Data"
+author: "Maggie Li"
+date: "11/30/2020"
+output: github_document
+---
+
+Mapping guides: 
+  -More general intro: https://www.joshuastevens.net/cartography/make-a-bivariate-choropleth-map/ 
+  -R tutorial: https://cran.r-project.org/web/packages/biscale/vignettes/biscale.html
+
+## Simple Univariate Chloropleth Maps
+* Abortion Rates
+* Public expenditure rate for contraceptives ($/those in need)
+* Contraceptive access
+* Hostility rate (although the map already exists for this... so is there a need? maybe we just link it)
+
+#### Load libraries and dataset
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(urbnmapr)
+
+# read in project data
+merge_data = read_csv("data/merge_data.csv") %>% 
+  rename(state_abbv = state_id) # to match shapefile col name below
+merge_data
+
+# import state shapefile from urbnmapr package
+all_states <- get_urbn_map("states", sf = T)
+all_states
+
+```
+
+#### Join project data with sf file
+```{r}
+data_sf <- merge(all_states, merge_data, left = F) 
+```
+
+#### Interactive leaflet map
+
+```{r}
+# make color palette
+abortion_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_abortion,
+  reverse = TRUE)
+
+abortion_map <- leaflet(data_sf) %>%
+  addProviderTiles("CartoDB.PositronNoLabels") %>%
+  addPolygons(color = ~abortion_pal(percent_abortion),
+              fillOpacity = 0.8, weight = 3) 
+abortion_map
+
+## ggplot alternative
+data_sf %>% 
+  ggplot(aes()) +
+  geom_sf(aes(fill = percent_abortion, color = "white")) +
+  scale_fill_viridis_c(option = "C")
+```
+
+
+
+## More complicated Bivariate Chloropleth Maps
+```{r}
+
+```
+

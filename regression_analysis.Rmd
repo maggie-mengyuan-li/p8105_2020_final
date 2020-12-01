@@ -2,7 +2,7 @@
 title: "Regression analysis"
 author: "Linh Tran"
 date: "11/30/2020"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -163,7 +163,29 @@ hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data)
 summary(hostility_model)
 ```
 
+### Is there a relationship between rate of abortion and public contraceptive expenditure by state?
 
+```{r}
+bc_fund_model <- lm(abortion_rate_15_44_state ~ expenditure_rate, data = merge_data)
+summary(bc_fund_model)
+```
+
+### Is there a relationship between rate of abortion and contraceptive access by state?
+
+```{r}
+bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
+summary(bc_access_model)
+```
+
+### Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive access?
+
+```{r}
+teenbirth_model <- lm(birthrate_15_19_state ~ need_bc_under_20, data = merge_data) 
+summary(teenbirth_model)
+```
+
+
+### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?
 
 ```{r, error = TRUE}
 models_results_df = 
