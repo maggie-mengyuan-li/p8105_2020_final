@@ -10,11 +10,11 @@ Mapping guides:
   -R tutorial: https://cran.r-project.org/web/packages/biscale/vignettes/biscale.html
 
 ## Simple Univariate Chloropleth Maps
-* Abortion Rates
-* Public expenditure rate for contraceptives ($/those in need)
-* Contraceptive access
-* Teen Birth Rates
-* Percent of Women in need of accessing publicly-funded contraceptives
+* COMPLETED Abortion Rates
+* MAGGIE Public expenditure rate for contraceptives ($/those in need)
+* MAGGIE Contraceptive access
+* RACHEL Teen Birth Rates
+* RACHEL Percent of Women in need of accessing publicly-funded contraceptives
 * Hostility rate (although the map already exists for this... so is there a need? maybe we just link it): https://www.guttmacher.org/article/2019/08/state-abortion-policy-landscape-hostile-supportive
 
 #### Load libraries and dataset
