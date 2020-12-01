@@ -125,12 +125,49 @@ bc_fund_map = base_map %>%
     direction = "auto")) %>% 
   addLegend(pal = bc_fund_pal, values = ~expenditure_rate, opacity = 0.7, title = 'Public Contraceptive Expenditure Rate by State  <br> ($/woman in likely need of publicly-funded services)',
   position = "bottomright")
+
 bc_fund_map
+
 ```
 
-#### Contraceptive access map
+#### Abortion access map
 
 ```{r}
+# make color palette
+abortion_access_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_women_no_provider,
+  reverse = TRUE)
 
+# add in custom labels for public contraceptive expenditure
+labels_abortion_access <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_women_no_provider
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_access_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_access_pal(data_sf$percent_women_no_provider),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_access,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_access_pal, values = ~percent_women_no_provider, opacity = 0.7, title = 'Percent of women living in a county <br> without access to abortion clinic by State',
+  position = "bottomright")
+
+abortion_access_map
 ```
 

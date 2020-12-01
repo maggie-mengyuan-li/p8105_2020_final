@@ -167,11 +167,11 @@ summary(hostility_bc_access)
 hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data)
 summary(hostility_model)
 
-# simple linear regression: is there a relationship between contraceptive access and abortion rates by state?
+# simple linear regression: is there a relationship between abortion access and abortion rates by state?
 bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
 summary(bc_access_model)
 
-# multivariate regression: is there a relationship between contraceptive access and hostility towards abortion with abortion rates by state?
+# multivariate regression: is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
 hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
 
 summary(hostility_adj_model)
@@ -185,14 +185,14 @@ bc_fund_model <- lm(abortion_rate_15_44_state ~ expenditure_rate, data = merge_d
 summary(bc_fund_model)
 ```
 
-### Is there a relationship between rate of abortion and contraceptive access by state? **moved to chunk above**
+### Is there a relationship between rate of abortion and abortion access by state? **moved to chunk above**
 
 ```{r}
 bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
 summary(bc_access_model)
 ```
 
-### Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive access? **probably not going to use**
+### Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive resources? **probably not going to use**
 
 ```{r}
 teenbirth_model <- lm(birthrate_15_19_state ~ need_bc_under_20, data = merge_data) 
