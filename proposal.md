@@ -72,3 +72,14 @@ will not allow us to do so.
     + Nov 20-Dec 2nd: Create a webpage and screencast
     + Dec 2-5: Final review 
     + Dec 5th: submit final project
+
+**Questions**
+
+  - Relationship between abortion rate and contraceptive funding/
+    Counties without provider/Hostility by state.
+
+  - Percent of women living in counties without providers vs. hostility
+    ?
+
+  - Percent of teen birth rate and percent of women in need of public
+    funding (need bc under 20).
