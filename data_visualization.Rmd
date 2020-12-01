@@ -13,7 +13,9 @@ Mapping guides:
 * Abortion Rates
 * Public expenditure rate for contraceptives ($/those in need)
 * Contraceptive access
-* Hostility rate (although the map already exists for this... so is there a need? maybe we just link it)
+* Teen Birth Rates
+* Percent of Women in need of accessing publicly-funded contraceptives
+* Hostility rate (although the map already exists for this... so is there a need? maybe we just link it): https://www.guttmacher.org/article/2019/08/state-abortion-policy-landscape-hostile-supportive
 
 #### Load libraries and dataset
 
@@ -22,21 +24,23 @@ library(tidyverse)
 library(leaflet)
 library(sf)
 library(urbnmapr)
+library(rgdal)
 
 # read in project data
 merge_data = read_csv("data/merge_data.csv") %>% 
-  rename(state_abbv = state_id) # to match shapefile col name below
+  rename(STUSPS = state_id) # to match shapefile col name below
 merge_data
 
 # import state shapefile from urbnmapr package
-all_states <- get_urbn_map("states", sf = T)
-all_states
-
+all_states <- readOGR("data/cb_2018_us_state_500k/cb_2018_us_state_500k.shp")
+summary(all_states)
 ```
 
 #### Join project data with sf file
 ```{r}
-data_sf <- merge(all_states, merge_data, left = F) 
+data_sf <- merge(all_states, merge_data, all.x = F) 
+# data_sf <- as(data_sf, 'Spatial')
+summary(data_sf)
 ```
 
 #### Interactive leaflet map
@@ -48,17 +52,42 @@ abortion_pal <- colorNumeric(
   domain = data_sf$percent_abortion,
   reverse = TRUE)
 
+# base map
 abortion_map <- leaflet(data_sf) %>%
-  addProviderTiles("CartoDB.PositronNoLabels") %>%
-  addPolygons(color = ~abortion_pal(percent_abortion),
-              fillOpacity = 0.8, weight = 3) 
-abortion_map
+  addProviderTiles("CartoDB.PositronNoLabels") # %>%
+  # addPolygons(fillColor = ~abortion_pal(data_sf$percent_abortion),
+  #             weight = 2,
+  # opacity = 1,
+  # color = "white",
+  # dashArray = "3",
+  # fillOpacity = 0.7) 
 
-## ggplot alternative
-data_sf %>% 
-  ggplot(aes()) +
-  geom_sf(aes(fill = percent_abortion, color = "white")) +
-  scale_fill_viridis_c(option = "C")
+labels <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_abortion
+) %>% lapply(htmltools::HTML)
+
+abortion_map = abortion_map %>% 
+  addPolygons(
+  fillColor = ~abortion_pal(data_sf$percent_abortion),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_pal, values = ~percent_abortion, opacity = 0.7, title = 'Abortion Rates (%) by State',
+  position = "bottomright")
 ```
 
 

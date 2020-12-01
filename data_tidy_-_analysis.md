@@ -19,7 +19,8 @@ data =
   )                                                                                #create expenditure_rate variable
 ```
 
-    ## Parsed with column specification:
+    ## 
+    ## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ## cols(
     ##   measure_name = col_character(),
     ##   datum = col_character(),
@@ -53,7 +54,8 @@ hostility =
   )
 ```
 
-    ## Parsed with column specification:
+    ## 
+    ## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ## cols(
     ##   `state_id,Hostility` = col_character()
     ## )

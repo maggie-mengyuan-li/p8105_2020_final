@@ -159,25 +159,40 @@ merge_data =
   merge_data %>% 
   mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive")))
 
+# simple linear regression: is there a relationship between hostility towards abortion and access to abortion?
+hostility_bc_access <- lm(percent_women_no_provider ~ hostility, data = merge_data)
+summary(hostility_bc_access)
+
+# simple linear regression: is there a relationship between hostility towards abortion and abortion rates by state?
 hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data)
 summary(hostility_model)
+
+# simple linear regression: is there a relationship between contraceptive access and abortion rates by state?
+bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
+summary(bc_access_model)
+
+# multivariate regression: is there a relationship between contraceptive access and hostility towards abortion with abortion rates by state?
+hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
+
+summary(hostility_adj_model)
+
 ```
 
-### Is there a relationship between rate of abortion and public contraceptive expenditure by state?
+### Is there a relationship between rate of abortion and public contraceptive expenditure by state? **probably not going to use**
 
 ```{r}
 bc_fund_model <- lm(abortion_rate_15_44_state ~ expenditure_rate, data = merge_data)
 summary(bc_fund_model)
 ```
 
-### Is there a relationship between rate of abortion and contraceptive access by state?
+### Is there a relationship between rate of abortion and contraceptive access by state? 
 
 ```{r}
 bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
 summary(bc_access_model)
 ```
 
-### Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive access?
+### Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive access? **probably not going to use**
 
 ```{r}
 teenbirth_model <- lm(birthrate_15_19_state ~ need_bc_under_20, data = merge_data) 
