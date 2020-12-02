@@ -295,6 +295,9 @@ $(document).ready(function () {
   <a href="regression_analysis.html">Regression Analysis</a>
 </li>
 <li>
+  <a href="findings.html">Findings</a>
+</li>
+<li>
   <a href="http://github.com/&lt;maggie-mengyuan-li&gt;/">
     <span class="fa fa-github fa-lg"></span>
      
@@ -318,6 +321,7 @@ $(document).ready(function () {
 <div id="TOC">
 <ul>
 <li><a href="#exploratory-data-analysis">Exploratory data analysis</a><ul>
+<li><a href="#rate-of-abortion-and-public-contraceptive-expenditure-by-state">Rate of abortion and public contraceptive expenditure by state?</a></li>
 <li><a href="#rate-of-abortion-by-state">Rate of abortion by state</a></li>
 <li><a href="#public-expenditure-by-state">Public expenditure by state</a></li>
 <li><a href="#hostility-towards-abortion-in-policy-by-state-and-abortion-rate">Hostility towards abortion in policy by state and abortion rate</a></li>
@@ -327,8 +331,6 @@ $(document).ready(function () {
 <li><a href="#is-there-a-relationship-between-rate-of-abortion-and-public-contraceptive-expenditure-by-state-probably-not-going-to-use">Is there a relationship between rate of abortion and public contraceptive expenditure by state? <strong>probably not going to use</strong></a></li>
 <li><a href="#is-there-a-relationship-between-rate-of-abortion-and-abortion-access-by-state-moved-to-chunk-above">Is there a relationship between rate of abortion and abortion access by state? <strong>moved to chunk above</strong></a></li>
 <li><a href="#is-there-a-relationship-between-teen-birth-rate-and-percent-of-women-in-need-of-publicly-funded-contraceptive-resources-probably-not-going-to-use">Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive resources? <strong>probably not going to use</strong></a></li>
-<li><a href="#is-there-a-relationship-between-rate-of-abortion-and-hostility-towards-abortion-in-policy-by-state-andor-contraceptive-fundingaccess-by-state">Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?</a></li>
-<li><a href="#relationship-between-teen-birth-rateabortion-rate-and-insurance-status">Relationship between teen birth rate/abortion rate and insurance status</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -345,6 +347,14 @@ $(document).ready(function () {
 <pre><code>## See spec(...) for full column specifications.</code></pre>
 <div id="exploratory-data-analysis" class="section level1">
 <h1>Exploratory data analysis</h1>
+<div id="rate-of-abortion-and-public-contraceptive-expenditure-by-state" class="section level2">
+<h2>Rate of abortion and public contraceptive expenditure by state?</h2>
+<pre class="r"><code>merge_data %&gt;% 
+  mutate(hostility = fct_relevel(hostility, c(&quot;hostile&quot;, &quot;leans_hostile&quot;, &quot;middle_ground&quot;, &quot;leans_supportive&quot;, &quot;supportive&quot;))) %&gt;% 
+  ggplot(aes(x = abortion_rate_15_44_state, y = expenditure_rate, color = hostility)) +
+  geom_point(size = 3)</code></pre>
+<p><img src="regression_analysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+</div>
 <div id="rate-of-abortion-by-state" class="section level2">
 <h2>Rate of abortion by state</h2>
 <pre class="r"><code>merge_data %&gt;% 
@@ -357,7 +367,7 @@ $(document).ready(function () {
     title = &quot;Rate of abortion per 1000 women aged 15-44 by state of residence&quot;
   ) +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<p><img src="regression_analysis_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 </div>
 <div id="public-expenditure-by-state" class="section level2">
 <h2>Public expenditure by state</h2>
@@ -371,7 +381,7 @@ $(document).ready(function () {
     title = &quot;Rate of public expenditure for women aged 15-44 in need of contraception&quot;
   ) +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p><img src="regression_analysis_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
 <pre class="r"><code>abortion_rate = 
   merge_data %&gt;% 
   ggplot(aes(x = state_id, y = abortion_rate_15_44_state, color = state_id)) +
@@ -396,7 +406,7 @@ public_expenditure =
   theme(legend.position = &quot;none&quot;, axis.text.x = element_text(angle = 45, hjust = 1))
 
 abortion_rate / public_expenditure</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p><img src="regression_analysis_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
 </div>
 <div id="hostility-towards-abortion-in-policy-by-state-and-abortion-rate" class="section level2">
 <h2>Hostility towards abortion in policy by state and abortion rate</h2>
@@ -417,7 +427,7 @@ abortion_rate / public_expenditure</code></pre>
     title = &quot;Hostility and Abortion Rate&quot;
   )</code></pre>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p><img src="regression_analysis_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 </div>
 <div id="top-10-states-with-the-highest-abortion-rate" class="section level2">
 <h2>Top 10 states with the highest abortion rate</h2>
@@ -448,8 +458,8 @@ subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
 ## See vignette(&#39;programming&#39;) for more help
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
-<div id="htmlwidget-9a2385069bfc63d26400" style="width:900px;height:700px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9a2385069bfc63d26400">{"x":{"data":[{"x":[17.3,18.2,16.1,17.5,15.2,21.7,28.2,16.5,27.4,16],"y":["CA","CT","DE","FL","GA","MD","NJ","NV","NY","RI"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[32613,1400,5000,906,5580,453,16306,1152,478,5617],"y":["CA","MA","MD","MN","NJ","NM","NY","OR","VT","WA"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(255,127,14,1)"}},"type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"anchor":"y"},"xaxis2":{"domain":[0.52,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["NM","VT","MN","OR","MA","MD","NJ","WA","NY","CA"],"anchor":"x2"},"yaxis":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["GA","RI","DE","NV","CA","FL","CT","MD","NY","NJ"],"anchor":"x"},"annotations":[],"shapes":[],"images":[],"width":900,"height":700,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Top 10 states with highest total expend","showlegend":false,"hovermode":"closest"},"attrs":{"12b625da59eff":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"12b622469a761":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7d4ffe3e1c110dfec909" style="width:900px;height:700px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7d4ffe3e1c110dfec909">{"x":{"data":[{"x":[17.3,18.2,16.1,17.5,15.2,21.7,28.2,16.5,27.4,16],"y":["CA","CT","DE","FL","GA","MD","NJ","NV","NY","RI"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[32613,1400,5000,906,5580,453,16306,1152,478,5617],"y":["CA","MA","MD","MN","NJ","NM","NY","OR","VT","WA"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(255,127,14,1)"}},"type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"anchor":"y"},"xaxis2":{"domain":[0.52,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["NM","VT","MN","OR","MA","MD","NJ","WA","NY","CA"],"anchor":"x2"},"yaxis":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["GA","RI","DE","NV","CA","FL","CT","MD","NY","NJ"],"anchor":"x"},"annotations":[],"shapes":[],"images":[],"width":900,"height":700,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Top 10 states with highest total expend","showlegend":false,"hovermode":"closest"},"attrs":{"136e44509624a":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"136e46b140bae":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="statistical-analysis" class="section level2">
 <h2>Statistical analysis</h2>
@@ -626,30 +636,6 @@ summary(teenbirth_model)</code></pre>
 ## Residual standard error: 6.848 on 48 degrees of freedom
 ## Multiple R-squared:  0.002973,   Adjusted R-squared:  -0.0178 
 ## F-statistic: 0.1431 on 1 and 48 DF,  p-value: 0.7069</code></pre>
-</div>
-<div id="is-there-a-relationship-between-rate-of-abortion-and-hostility-towards-abortion-in-policy-by-state-andor-contraceptive-fundingaccess-by-state" class="section level3">
-<h3>Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?</h3>
-<pre class="r"><code>models_results_df = 
-  merge_data %&gt;% 
-  nest(data = -state_id) %&gt;% 
-  mutate(
-    models = map(.x = data, ~glm(abortion_rate_15_44_state ~ total_expend_abortion + counties_no_provider, data = .x, family = binomial)),
-    results = map(models, broom::tidy)
-  ) %&gt;% 
-  select(state_id, results) %&gt;% 
-  unnest(results) %&gt;% 
-  mutate(
-    OR = exp(estimate),
-    CI_lower = exp(estimate - 1.96 * std.error),
-    CI_upper = exp(estimate + 1.96 * std.error)
-  ) %&gt;% 
-  select(state_id, term, OR, starts_with(&quot;CI&quot;))</code></pre>
-<pre><code>## Error: Problem with `mutate()` input `models`.
-## x y values must be 0 &lt;= y &lt;= 1
-## ℹ Input `models` is `map(...)`.</code></pre>
-</div>
-<div id="relationship-between-teen-birth-rateabortion-rate-and-insurance-status" class="section level3">
-<h3>Relationship between teen birth rate/abortion rate and insurance status</h3>
 </div>
 </div>
 </div>

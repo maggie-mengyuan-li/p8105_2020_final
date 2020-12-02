@@ -9,6 +9,8 @@ navbar:
       href: data_visualization.html
     - text: "Regression Analysis"
       href: regression_analysis.html
+    - text: "Findings"
+      href: findings.html
     - icon: fa-github fa-lg
       href: http://github.com/<maggie-mengyuan-li>/
 output:

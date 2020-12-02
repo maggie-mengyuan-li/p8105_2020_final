@@ -39,6 +39,16 @@ merge_data = read_csv("data/merge_data.csv")
 
 # Exploratory data analysis
 
+## Rate of abortion and public contraceptive expenditure by state?
+
+```{r, fig.height = 12, fig.width = 6}
+merge_data %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  ggplot(aes(x = abortion_rate_15_44_state, y = expenditure_rate, color = hostility)) +
+  geom_point(size = 3)
+```
+
+
 ## Rate of abortion by state
 
 ```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
@@ -198,29 +208,4 @@ summary(bc_access_model)
 teenbirth_model <- lm(birthrate_15_19_state ~ need_bc_under_20, data = merge_data) 
 summary(teenbirth_model)
 ```
-
-
-### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/access by state ?
-
-```{r, error = TRUE}
-models_results_df = 
-  merge_data %>% 
-  nest(data = -state_id) %>% 
-  mutate(
-    models = map(.x = data, ~glm(abortion_rate_15_44_state ~ total_expend_abortion + counties_no_provider, data = .x, family = binomial)),
-    results = map(models, broom::tidy)
-  ) %>% 
-  select(state_id, results) %>% 
-  unnest(results) %>% 
-  mutate(
-    OR = exp(estimate),
-    CI_lower = exp(estimate - 1.96 * std.error),
-    CI_upper = exp(estimate + 1.96 * std.error)
-  ) %>% 
-  select(state_id, term, OR, starts_with("CI"))
-
-```
-
-
-### Relationship between teen birth rate/abortion rate and insurance status
 
