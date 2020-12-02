@@ -168,3 +168,214 @@ abortion_access_map = base_map %>%
 abortion_access_map
 ```
 
+#### Teen birth rates map
+
+```{r}
+# make color palette
+teen_births_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$birthrate_15_19_state,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_teen_births <- sprintf(
+  "<strong>%s</strong><br/> %g births per 1000 women",
+  data_sf$STUSPS, data_sf$birthrate_15_19_state
+) %>% lapply(htmltools::HTML)
+
+
+# full map
+teen_births_map = base_map %>% 
+  addPolygons(
+  fillColor = ~teen_births_pal(data_sf$birthrate_15_19_state),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_teen_births,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = teen_births_pal, values = ~birthrate_15_19_state, opacity = 0.7, title = 'No. of births per 1000 women aged 15-19',
+  position = "bottomright")
+
+teen_births_map
+```
+
+#### Number of Women under 20 in need of accessing publicly-funded contraceptives
+
+```{r}
+# make color palette
+need_bc_teen_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$need_bc_under_20,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_need_bc_teen <- sprintf(
+  "<strong>%s</strong><br/>%g",
+  data_sf$STUSPS, data_sf$need_bc_under_20
+) %>% lapply(htmltools::HTML)
+
+# full map
+need_bc_teen_map = base_map %>% 
+  addPolygons(
+  fillColor = ~need_bc_teen_pal(data_sf$need_bc_under_20),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_need_bc_teen,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = need_bc_teen_pal, values = ~need_bc_under_20, opacity = 0.7, title = 'No. of women who likely need public support for contraceptive services and supplies younger than 20',
+  position = "bottomright")
+
+need_bc_teen_map
+```
+
+#### Total Number of Women in need of accessing publicly-funded contraceptives
+
+```{r}
+# make color palette
+need_bc_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$need_bc_13_44,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_need_bc <- sprintf(
+  "<strong>%s</strong><br/>%g",
+  data_sf$STUSPS, data_sf$need_bc_13_44
+) %>% lapply(htmltools::HTML)
+
+# full map
+need_bc_map = base_map %>% 
+  addPolygons(
+  fillColor = ~need_bc_pal(data_sf$need_bc_13_44),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_need_bc,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = need_bc_pal, values = ~need_bc_13_44, opacity = 0.7, title = 'Total No. of women who likely need public support for contraceptive services and supplies',
+  position = "bottomright")
+
+need_bc_map
+```
+
+#### State expenditure rate
+
+```{r}
+# make color palette
+expenditure_rate_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$expenditure_rate,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_expenditure_rate <- sprintf(
+  "<strong>%s</strong><br/>%g",
+  data_sf$STUSPS, data_sf$expenditure_rate
+) %>% lapply(htmltools::HTML)
+
+# full map
+expenditure_rate_map = base_map %>% 
+  addPolygons(
+  fillColor = ~expenditure_rate_pal(data_sf$expenditure_rate),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_expenditure_rate,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = expenditure_rate_pal, values = ~expenditure_rate, opacity = 0.7, title = 'Ratio of Total reported public expenditures for family planning client services in 1000s of dollars to number of women in likely need of public support for contraceptive services and supplies',
+  position = "bottomright")
+
+expenditure_rate_map
+```
+
+#### Hostility map
+
+```{r eval=FALSE, include=FALSE}
+# make color palette
+hostility_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$hostility,
+  reverse = TRUE)
+
+# this method does not work - to create a map for hostility we would need to either:
+# 1) make hostility into a factor variable rather than character (probably would need 
+#    to do in original merge_data.csv file because mutate behaves strangely with spatial file)
+# 2) manually assign each grade to a specific color
+
+# add in custom labels for public contraceptive expenditure
+labels_hostility <- sprintf(
+  "<strong>%s</strong><br/>%s",
+  data_sf$STUSPS, data_sf$hostility
+) %>% lapply(htmltools::HTML)
+
+# full map
+hostility_map = base_map %>% 
+  addPolygons(
+  fillColor = ~hostility_pal(data_sf$hostility),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_hostility,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = hostility_pal, values = ~hostility, opacity = 0.7, title = 'State hostility ranking in 2000 according to Guttmacher ',
+  position = "bottomright")
+
+hostility_map
+```
+
