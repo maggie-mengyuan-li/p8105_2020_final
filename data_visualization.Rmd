@@ -210,7 +210,7 @@ teen_births_map = base_map %>%
 teen_births_map
 ```
 
-#### Number of Women under 20 in need of accessing publicly-funded contraceptives
+#### Number of Women under 20 in need of accessing publicly-funded contraceptives **don't need to include in final report**
 
 ```{r}
 # make color palette
@@ -251,7 +251,7 @@ need_bc_teen_map = base_map %>%
 need_bc_teen_map
 ```
 
-#### Total Number of Women in need of accessing publicly-funded contraceptives
+#### Total Number of Women in need of accessing publicly-funded contraceptives **dont need this**
 
 ```{r}
 # make color palette
@@ -292,7 +292,7 @@ need_bc_map = base_map %>%
 need_bc_map
 ```
 
-#### State expenditure rate
+#### State expenditure rate **repeat of map above**
 
 ```{r}
 # make color palette
@@ -333,7 +333,7 @@ expenditure_rate_map = base_map %>%
 expenditure_rate_map
 ```
 
-#### Hostility map
+#### Hostility map **MAGGIE WILL EDIT TO MAKE THE PALETTE WORK**
 
 ```{r eval=FALSE, include=FALSE}
 # make color palette

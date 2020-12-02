@@ -1,5 +1,5 @@
 ---
-title: "Regression analysis"
+title: "Analysis"
 author: "Linh Tran"
 date: "11/30/2020"
 output: html_document
@@ -183,7 +183,6 @@ summary(bc_access_model)
 
 # multivariate regression: is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
 hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
-
 summary(hostility_adj_model)
 
 ```

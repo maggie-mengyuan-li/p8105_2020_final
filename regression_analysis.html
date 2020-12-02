@@ -13,7 +13,7 @@
 
 <meta name="date" content="2020-11-30" />
 
-<title>Regression analysis</title>
+<title>Analysis</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -295,16 +295,13 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="overview.html">Proposal</a>
+  <a href="data_visualization.html">Map Visualizations</a>
 </li>
 <li>
-  <a href="data_visualization.html">Visualizations</a>
+  <a href="regression_analysis.html">Analysis</a>
 </li>
 <li>
-  <a href="regression_analysis.html">Regression Analysis</a>
-</li>
-<li>
-  <a href="findings.html">Findings</a>
+  <a href="full_report.html">Full Report</a>
 </li>
 <li>
   <a href="http://github.com/&lt;maggie-mengyuan-li&gt;/">
@@ -321,7 +318,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Regression analysis</h1>
+<h1 class="title toc-ignore">Analysis</h1>
 <h4 class="author">Linh Tran</h4>
 <h4 class="date">11/30/2020</h4>
 
@@ -348,7 +345,7 @@ $(document).ready(function () {
 <p>Load dataset</p>
 <pre class="r"><code>merge_data = read_csv(&quot;data/merge_data.csv&quot;)</code></pre>
 <pre><code>## 
-## ── Column specification ──────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
 ##   .default = col_double(),
 ##   state_id = col_character(),
@@ -468,8 +465,8 @@ subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
 ## See vignette(&#39;programming&#39;) for more help
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
-<div id="htmlwidget-0f84a6a96f9615bb3b67" style="width:900px;height:700px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0f84a6a96f9615bb3b67">{"x":{"data":[{"x":[17.3,18.2,16.1,17.5,15.2,21.7,28.2,16.5,27.4,16],"y":["CA","CT","DE","FL","GA","MD","NJ","NV","NY","RI"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[32613,1400,5000,906,5580,453,16306,1152,478,5617],"y":["CA","MA","MD","MN","NJ","NM","NY","OR","VT","WA"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(255,127,14,1)"}},"type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"anchor":"y"},"xaxis2":{"domain":[0.52,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["NM","VT","MN","OR","MA","MD","NJ","WA","NY","CA"],"anchor":"x2"},"yaxis":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["GA","RI","DE","NV","CA","FL","CT","MD","NY","NJ"],"anchor":"x"},"annotations":[],"shapes":[],"images":[],"width":900,"height":700,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Top 10 states with highest total expend","showlegend":false,"hovermode":"closest"},"attrs":{"5f61fec2306":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"5f647ef6f49":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-bd454e5c0b118414fd8c" style="width:900px;height:700px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-bd454e5c0b118414fd8c">{"x":{"data":[{"x":[17.3,18.2,16.1,17.5,15.2,21.7,28.2,16.5,27.4,16],"y":["CA","CT","DE","FL","GA","MD","NJ","NV","NY","RI"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[32613,1400,5000,906,5580,453,16306,1152,478,5617],"y":["CA","MA","MD","MN","NJ","NM","NY","OR","VT","WA"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(255,127,14,1)"}},"type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"anchor":"y"},"xaxis2":{"domain":[0.52,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["NM","VT","MN","OR","MA","MD","NJ","WA","NY","CA"],"anchor":"x2"},"yaxis":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["GA","RI","DE","NV","CA","FL","CT","MD","NY","NJ"],"anchor":"x"},"annotations":[],"shapes":[],"images":[],"width":900,"height":700,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Top 10 states with highest total expend","showlegend":false,"hovermode":"closest"},"attrs":{"bac18e751f8":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"bac7ab67d8d":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="statistical-analysis" class="section level2">
 <h2>Statistical analysis</h2>
@@ -551,7 +548,6 @@ summary(bc_access_model)</code></pre>
 ## F-statistic:    38 on 1 and 48 DF,  p-value: 1.404e-07</code></pre>
 <pre class="r"><code># multivariate regression: is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
 hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
-
 summary(hostility_adj_model)</code></pre>
 <pre><code>## 
 ## Call:

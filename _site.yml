@@ -3,14 +3,12 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "Proposal"
-      href: overview.html
-    - text: "Visualizations"
+    - text: "Map Visualizations"
       href: data_visualization.html
-    - text: "Regression Analysis"
+    - text: "Analysis"
       href: regression_analysis.html
-    - text: "Findings"
-      href: findings.html
+    - text: "Full Report"
+      href: full_report.html
     - icon: fa-github fa-lg
       href: http://github.com/<maggie-mengyuan-li>/
 output:

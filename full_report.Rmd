@@ -1,0 +1,38 @@
+---
+title: "Full Report"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    code_folding: hide
+---
+
+# LINH/RACHEL Motivation
+
+# LINH/RACHEL Related Work
+
+# LINH/RACHEL Research Questions
+
+# MAGGIE Data Sources
+
+# SEE BELOW Exploratory Analysis
+
+## NANCY Loading and tidying data 
+
+## LINH Scatterplot comparing abortion rates and public expenditure on contraceptives 
+
+## LINH Abortion rates by state
+
+## LINH Public expenditure on contraceptives by state
+
+## LINH Hostility ratings by state
+
+## LINH Top 10 states with the highest abortion rates
+
+## MAGGIE Spatial Visualizations of abortion rates, public expenditure, abortion access, teen birth rate, women in need to publicly-funded contraceptive services
+
+## RACHEL Map ShinyApp
+
+# MAGGIE Regression Models
+
+# ALL Discussion and Conclusion
