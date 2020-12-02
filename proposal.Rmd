@@ -1,6 +1,6 @@
 ---
 title: "Group 7 proposal"
-output: github_document
+output: html_document
 ---
 
 

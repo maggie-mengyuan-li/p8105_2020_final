@@ -1,0 +1,18 @@
+name: "Group 7 Final Project"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Proposal"
+      href: overview.html
+    - text: "Visualizations"
+      href: data_visualization.html
+    - text: "Regression Analysis"
+      href: regression_analysis.html
+    - icon: fa-github fa-lg
+      href: http://github.com/<maggie-mengyuan-li>/
+output:
+  html_document:
+    self_contained: no
+    theme: journal
+    toc: true 

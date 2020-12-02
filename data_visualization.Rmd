@@ -1,8 +1,6 @@
 ---
 title: "Spatial Visualization of Data"
-author: "Maggie Li"
-date: "11/30/2020"
-output: github_document
+output: html_document
 ---
 
 Mapping guides: 
@@ -23,7 +21,6 @@ Mapping guides:
 library(tidyverse)
 library(leaflet)
 library(sf)
-library(urbnmapr)
 library(rgdal)
 
 # read in project data
