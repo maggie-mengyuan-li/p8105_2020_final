@@ -3,16 +3,8 @@ title: "Spatial Visualization of Data"
 output: html_document
 ---
 
-Mapping guides: 
-  -More general intro: https://www.joshuastevens.net/cartography/make-a-bivariate-choropleth-map/ 
-  -R tutorial: https://cran.r-project.org/web/packages/biscale/vignettes/biscale.html
-
 ## Simple Univariate Chloropleth Maps using Leaflet
-* COMPLETED Abortion Rates
-* MAGGIE Public expenditure rate for contraceptives ($/those in need)
-* MAGGIE Abortion access
-* RACHEL Teen Birth Rates
-* RACHEL Percent of Women in need of accessing publicly-funded contraceptives
+
 * Hostility rate (although the map already exists for this... so is there a need? maybe we just link it): https://www.guttmacher.org/article/2019/08/state-abortion-policy-landscape-hostile-supportive
 
 #### Load libraries and dataset
@@ -23,15 +15,24 @@ library(leaflet)
 library(sf)
 library(rgdal)
 
-# read in project data
-merge_data = read_csv("data/merge_data.csv") %>% 
-  rename(STUSPS = state_id) %>% # to match shapefile col name below
-  mutate_if(is.numeric, round, digits = 2) # round to 2 decimal places
-merge_data
-
-# import state shapefile from data folder
+# import US state shapefile from data folder
 all_states <- readOGR("data/cb_2018_us_state_500k/cb_2018_us_state_500k.shp")
 summary(all_states)
+
+
+# read in project data
+merge_data = read_csv("data/merge_data.csv") %>% 
+  rename(STUSPS = state_id) %>% # to match shapefile column name 
+  mutate_if(is.numeric, round, digits = 2) %>%  # round to 2 decimal places
+  mutate(hostility = as.factor(hostility)) %>%
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% # for mapping hostility as a categorical variable
+  mutate(hostility = recode(hostility,
+                            hostile = "Hostile",
+                            leans_hostile = "Leans Hostile",
+                            middle_ground = "Middle Ground",
+                            leans_supportive = "Leans Supportive",
+                            supportie = "Supportive")) # cleaner hostility names for map
+merge_data
 ```
 
 #### Join project data with sf file
@@ -337,15 +338,10 @@ expenditure_rate_map
 
 ```{r eval=FALSE, include=FALSE}
 # make color palette
-hostility_pal <- colorNumeric(
+hostility_pal <- colorFactor(
   palette = "inferno",
   domain = data_sf$hostility,
-  reverse = TRUE)
-
-# this method does not work - to create a map for hostility we would need to either:
-# 1) make hostility into a factor variable rather than character (probably would need 
-#    to do in original merge_data.csv file because mutate behaves strangely with spatial file)
-# 2) manually assign each grade to a specific color
+  reverse = F)
 
 # add in custom labels for public contraceptive expenditure
 labels_hostility <- sprintf(
@@ -373,7 +369,10 @@ hostility_map = base_map %>%
     style = list("font-weight" = "normal", padding = "3px 8px"),
     textsize = "15px",
     direction = "auto")) %>% 
-  addLegend(pal = hostility_pal, values = ~hostility, opacity = 0.7, title = 'State hostility ranking in 2000 according to Guttmacher ',
+  addLegend(pal = hostility_pal, 
+            values = ~hostility, 
+            opacity = 1, 
+            title = 'Hostility Rating towards Abortion Rights in 2010',
   position = "bottomright")
 
 hostility_map

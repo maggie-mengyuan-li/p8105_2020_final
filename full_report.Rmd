@@ -1,11 +1,17 @@
 ---
-title: "Full Report"
+title: "Factors Influencing Abortion Rates in the US"
+author: "Linh, Maggie, Nancy, Rachel"
+date: "December 5, 2020"
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
     code_folding: hide
 ---
+
+```{r setup, message = FALSE, results = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 # LINH/RACHEL Motivation
 
@@ -15,7 +21,18 @@ output:
 
 # MAGGIE/NANCY Data Sources
 
-# SEE BELOW Exploratory Analysis
+# Exploratory Analysis
+
+First we loaded all necessary packages for our analysis. Be sure to install these in your console before running this chunk.
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rgdal)
+library(huxtable)
+```
+
 
 ## NANCY Loading and tidying data 
 
@@ -29,10 +46,316 @@ output:
 
 ## LINH Top 10 states with the highest abortion rates
 
-## MAGGIE Spatial Visualizations of abortion rates, public expenditure, abortion access, teen birth rate, women in need to publicly-funded contraceptive services
+## Spatial Visualizations
+
+To create the maps of our relevant variables, we first read in a US state shapefile downloaded from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html). We then read in our tidied Guttmacher dataset, and did some additional tidying.
+
+```{r}
+# import US state shapefile from data folder
+all_states <- readOGR("data/cb_2018_us_state_500k/cb_2018_us_state_500k.shp")
+
+# read in project data
+merge_data = read_csv("data/merge_data.csv") %>% 
+  rename(STUSPS = state_id) %>% # to match shapefile column name 
+  mutate_if(is.numeric, round, digits = 2) %>%  # round to 2 decimal places
+  mutate(hostility = as.factor(hostility)) %>%
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% # for mapping hostility as a categorical variable
+  mutate(hostility = recode(hostility,
+                            hostile = "Hostile",
+                            leans_hostile = "Leans Hostile",
+                            middle_ground = "Middle Ground",
+                            leans_supportive = "Leans Supportive",
+                            supportie = "Supportive")) # cleaner hostility names for map
+
+```
+
+We then joined the Guttmacher data to the shapefile.
+
+```{r}
+data_sf <- merge(all_states, merge_data, all.x = F) 
+```
+
+We then created a universal basemap and for each map, we created a continuous-scale color palette.
+
+**Abortion Rates**
+
+```{r}
+# make color palette
+abortion_rate_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_abortion,
+  reverse = TRUE)
+
+# base map
+base_map <- leaflet(data_sf) %>%
+  addProviderTiles("CartoDB.PositronNoLabels") 
+
+# add in custom labels for percent abortion
+labels_abortion_rate <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_abortion
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_rate_pal(data_sf$percent_abortion),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_rate,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_rate_pal, values = ~percent_abortion, opacity = 0.7, title = 'Abortion Rates by State <br> (% of pregnancies ending in abortions)',
+  position = "bottomright")
+abortion_map
+```
+
+**Public Contraceptive Expenditure Rates**
+
+```{r}
+# make color palette
+bc_fund_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$expenditure_rate,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_bc_fund <- sprintf(
+  "<strong>%s</strong><br/>&#36;%g/woman",
+  data_sf$STUSPS, data_sf$expenditure_rate
+) %>% lapply(htmltools::HTML)
+
+# full map
+bc_fund_map = base_map %>% 
+  addPolygons(
+  fillColor = ~bc_fund_pal(data_sf$expenditure_rate),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_bc_fund,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = bc_fund_pal, values = ~expenditure_rate, opacity = 0.7, title = 'Public Contraceptive Expenditure Rate by State  <br> ($/woman in likely need of publicly-funded services)',
+  position = "bottomright")
+
+bc_fund_map
+```
+
+**Percent of Women Without Access to Abortion Provider in County of Residence**
+
+```{r}
+# make color palette
+abortion_access_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_women_no_provider,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_abortion_access <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_women_no_provider
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_access_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_access_pal(data_sf$percent_women_no_provider),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_access,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_access_pal, values = ~percent_women_no_provider, opacity = 0.7, title = 'Percent of women living in a county <br> without access to abortion clinic by State',
+  position = "bottomright")
+
+abortion_access_map
+```
+
+**Teen Birth Rates**
+
+```{r}
+# make color palette
+teen_births_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$birthrate_15_19_state,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_teen_births <- sprintf(
+  "<strong>%s</strong><br/> %g births per 1000 women",
+  data_sf$STUSPS, data_sf$birthrate_15_19_state
+) %>% lapply(htmltools::HTML)
+
+
+# full map
+teen_births_map = base_map %>% 
+  addPolygons(
+  fillColor = ~teen_births_pal(data_sf$birthrate_15_19_state),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_teen_births,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = teen_births_pal, values = ~birthrate_15_19_state, opacity = 0.7, title = 'No. of births per 1000 women aged 15-19',
+  position = "bottomright")
+
+teen_births_map
+```
+
+**Hostility toward Abortion Rights by State in 2010**
+
+```{r}
+# make color palette
+hostility_pal <- colorFactor(
+  palette = "inferno",
+  domain = data_sf$hostility,
+  reverse = F)
+
+# add in custom labels for public contraceptive expenditure
+labels_hostility <- sprintf(
+  "<strong>%s</strong><br/>%s",
+  data_sf$STUSPS, data_sf$hostility
+) %>% lapply(htmltools::HTML)
+
+# full map
+hostility_map = base_map %>% 
+  addPolygons(
+  fillColor = ~hostility_pal(data_sf$hostility),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_hostility,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = hostility_pal, 
+            values = ~hostility, 
+            opacity = 1, 
+            title = 'Hostility Rating towards Abortion Rights in 2010',
+  position = "bottomright")
+
+hostility_map
+```
 
 ## RACHEL Map ShinyApp
 
 # MAGGIE Regression Models
+
+We ran a few different linear regression analyses to round out our exploratory data analysis. The tables below summarizes the effect estimates we found for these models:
+
+1. Simple linear regression: Is there a relationship between hostility towards abortion and access to abortion?
+
+```{r}
+hostility_bc_access <- lm(percent_women_no_provider ~ hostility, data = merge_data) 
+hostility_bc_access_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Access", "", "", "", ""), 
+  Predictors = c("Hostility Rating", 
+                 "Hostile (Intercept)", 
+                 "Leans Hostile", 
+                 "Middle Ground", 
+                 "Leans Supportive", 
+                 "Supportive"), 
+  Estimate = c("Estimate", 
+               hostility_bc_access$coefficients[1], 
+               hostility_bc_access$coefficients[2],
+               hostility_bc_access$coefficients[3],
+               hostility_bc_access$coefficients[4],
+               hostility_bc_access$coefficients[5]), 
+  P_value = c("P-value", 
+              summary(hostility_bc_access)$coefficients[,"Pr(>|t|)"][1], 
+              summary(hostility_bc_access)$coefficients[,"Pr(>|t|)"][2],
+              summary(hostility_bc_access)$coefficients[,"Pr(>|t|)"][3],
+              summary(hostility_bc_access)$coefficients[,"Pr(>|t|)"][4],
+              summary(hostility_bc_access)$coefficients[,"Pr(>|t|)"][5]),
+  add_colnames = FALSE
+)
+hostility_bc_access_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
+
+```
+
+
+2. Simple linear regression: Is there a relationship between hostility towards abortion and abortion rates by state?
+
+```{r}
+hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data) 
+
+
+```
+
+3. Simple linear regression: Is there a relationship between abortion access and abortion rates by state?
+
+```{r}
+bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
+
+
+
+```
+
+# Multivariate regression: Is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
+
+```{r}
+hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
+```
+
 
 # ALL Discussion and Conclusion
