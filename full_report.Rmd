@@ -9,42 +9,151 @@ output:
     code_folding: hide
 ---
 
-```{r setup, message = FALSE, results = FALSE, warning = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-# LINH/RACHEL Motivation
-
-# LINH/RACHEL Related Work
-
-# LINH/RACHEL Research Questions
-
-# MAGGIE/NANCY Data Sources
-
-# Exploratory Analysis
-
-First we loaded all necessary packages for our analysis. Be sure to install these in your console before running this chunk.
-
-```{r}
+```{r include = FALSE}
 library(tidyverse)
 library(leaflet)
 library(sf)
 library(rgdal)
 library(huxtable)
+library(patchwork)
+library(broom)
+library(plotly)
+library(devtools)
+library(modelr)
+library(mgcv)
+
+knitr::opts_chunk$set(
+	fig.width = 6, 
+  fig.asp = .6,
+  out.width = "90%"
+)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+# Motivation
+For this project, we aim to examine state-level sociodemographic factors that may influence abortion rate. State family planning policies vary widely, with some states more hostile to women attempting to access an abortion, and others more supportive (Nash 2019). One study showed that of women who received a nonhospital abortion, 24% traveled at least 50 miles from their home to an abortion facility (Henshaw 1995). We plan to investigate the relationship between hostility towards abortion, within-county abortion provider access, and abortion rate.  We are interested in visualizing these data to hopefully help disseminate this information in a digestible way to inform outreach/education strategies and policy.
+
+# Related Work
+We are additionally interested in the relationship between teen birth rate, public expenditures for contraception, and hostility. 
+
+# Research Questions
+* Is there a relationship between hostility towards abortion and access to abortion?
+* Is there a relationship between hostility towards abortion and abortion rates by state?
+* Is there a relationship between abortion access and abortion rates by state?
+* Is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
+
+# Data Sources
+
+The data are pulled from the Guttmacher Institute, which is a research organization founded in 1968 working to study, educate, and advance sexual and reproductive health and rights. The Guttmacher Institute Data Center provides public-access birth, abortion, and contraceptive use demographic data at the national and state levels, and contraceptive use data only at the county level. Since we are interested in multiple study outcomes—abortion rates, contraceptive funding/access, and teen birth rates—we pulled these data at the finest resolution possible, aggregated at the state level, for all 50 US States.
+
+# Exploratory Analysis
+
+```{r include = FALSE}
+merge_data = read_csv("data/merge_data.csv")
+```
+
+## Scatterplot comparing abortion rates and public expenditure on contraceptives 
+
+```{r, fig.height = 12, fig.width = 6}
+merge_data %>% 
+ mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+ mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>% 
+  plot_ly(x = ~abortion_rate_15_44_state, y = ~expenditure_rate, color = ~hostility, type = "scatter", colors = "viridis", size = 3, text = ~text_label) %>% 
+  layout(
+    xaxis = list(title = "Number of abortions per 1000 women aged 15-44"),
+    yaxis = list(title = "Expenditure Rate")
+  )
+
 ```
 
 
-## NANCY Loading and tidying data 
+## Rate of abortion by state
 
-## LINH Scatterplot comparing abortion rates and public expenditure on contraceptives 
+```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
+merge_data %>% 
+  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, fill = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Abortion rate",
+    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
+  ) +
+  theme(legend.position = "none")
+```
 
-## LINH Abortion rates by state
+## Public expenditure by state
 
-## LINH Public expenditure on contraceptives by state
+```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
+merge_data %>% 
+  mutate(state_id = fct_reorder(state_id, expenditure_rate)) %>% 
+  ggplot(aes(x = state_id, y = expenditure_rate, fill = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Public expenditure per women in need",
+    title = "Rate of public expenditure for women aged 15-44 in need of contraception"
+  ) +
+  theme(legend.position = "none")
+  
+```
 
-## LINH Hostility ratings by state
+## Abortion Rate and Public Expenditure -- 
 
-## LINH Top 10 states with the highest abortion rates
+```{r, fig.height = 12, fig.width = 12, fig.asp = .6}
+abortion_rate = 
+  merge_data %>% 
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, color = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Abortion rate",
+    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
+  ) +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) 
+ 
+
+public_expenditure =
+  merge_data %>% 
+  ggplot(aes(x = state_id, y = expenditure_rate, color = state_id)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Public expenditure per women in need",
+    title = "Rate of public expenditure for women aged 15-44 in need of contraception"
+  ) +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
+
+abortion_rate / public_expenditure
+```
+
+## Hostility towards abortion in policy by state and abortion rate
+
+```{r, fig.height = 9, fig.width = 9, fig.asp = .6}
+merge_data %>% 
+  select(state_id, percent_abortion, abortion_rate_15_44_state ,hostility) %>% 
+  mutate(hostility = as.factor(hostility)) %>% 
+  group_by(hostility) %>% 
+  summarize(
+    n = n(),
+    abortion_rate = mean(abortion_rate_15_44_state)
+  ) %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  ggplot(aes(x = hostility, y = abortion_rate, fill = hostility)) +
+  geom_bar(stat = "identity") + 
+  labs(
+    x = "Hostility towards abortion in policy by state",
+    y = "Average rate of abortion by state",
+    title = "Hostility and Abortion Rate"
+  )
+  
+```
 
 ## Spatial Visualizations
 
@@ -338,7 +447,6 @@ hostility_bc_access_tbl %>%
 
 ```{r}
 hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data) 
-
 
 ```
 

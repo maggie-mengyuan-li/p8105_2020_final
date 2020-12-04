@@ -1,0 +1,47 @@
+---
+title: "Flex dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(tidyverse)
+merge_data = read_csv("data/merge_data.csv")
+```
+
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+merge_data %>% 
+ mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>%
+ mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>% 
+  plot_ly(x = ~abortion_rate_15_44_state, y = ~expenditure_rate, color = ~hostility, type = "scatter", colors = "viridis", size = 3, text = ~text_label) %>% 
+  layout(
+    xaxis = list(title = "Number of abortions per 1000 women aged 15-44"),
+    yaxis = list(title = "Expenditure Rate")
+  )
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
+

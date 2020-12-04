@@ -24,24 +24,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
-<script src="site_libs/plotly-binding-4.9.2.1/plotly.js"></script>
-<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
-<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
-<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
-<link href="site_libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="site_libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-      </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -304,6 +288,9 @@ $(document).ready(function () {
   <a href="full_report.html">Full Report</a>
 </li>
 <li>
+  <a href="flex_dashboard.html">Dashboard</a>
+</li>
+<li>
   <a href="http://github.com/&lt;maggie-mengyuan-li&gt;/">
     <span class="fa fa-github fa-lg"></span>
      
@@ -326,148 +313,15 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#exploratory-data-analysis">Exploratory data analysis</a><ul>
-<li><a href="#rate-of-abortion-and-public-contraceptive-expenditure-by-state">Rate of abortion and public contraceptive expenditure by state?</a></li>
-<li><a href="#rate-of-abortion-by-state">Rate of abortion by state</a></li>
-<li><a href="#public-expenditure-by-state">Public expenditure by state</a></li>
-<li><a href="#hostility-towards-abortion-in-policy-by-state-and-abortion-rate">Hostility towards abortion in policy by state and abortion rate</a></li>
-<li><a href="#top-10-states-with-the-highest-abortion-rate">Top 10 states with the highest abortion rate</a></li>
 <li><a href="#statistical-analysis">Statistical analysis</a><ul>
 <li><a href="#is-there-a-relationship-between-rate-of-abortion-and-hostility-towards-abortion-in-policy-by-state-andor-contraceptive-fundingabortion-access-by-state-all-models-here">Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/abortion access by state? <strong>ALL MODELS HERE</strong></a></li>
 <li><a href="#is-there-a-relationship-between-rate-of-abortion-and-public-contraceptive-expenditure-by-state-probably-not-going-to-use">Is there a relationship between rate of abortion and public contraceptive expenditure by state? <strong>probably not going to use</strong></a></li>
 <li><a href="#is-there-a-relationship-between-rate-of-abortion-and-abortion-access-by-state-moved-to-chunk-above">Is there a relationship between rate of abortion and abortion access by state? <strong>moved to chunk above</strong></a></li>
 <li><a href="#is-there-a-relationship-between-teen-birth-rate-and-percent-of-women-in-need-of-publicly-funded-contraceptive-resources-probably-not-going-to-use">Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive resources? <strong>probably not going to use</strong></a></li>
 </ul></li>
-</ul></li>
 </ul>
 </div>
 
-<p>Load dataset</p>
-<pre class="r"><code>merge_data = read_csv(&quot;data/merge_data.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ──────────────────────────────────────────────────────────────
-## cols(
-##   .default = col_double(),
-##   state_id = col_character(),
-##   hostility = col_character()
-## )
-## ℹ Use `spec()` for the full column specifications.</code></pre>
-<div id="exploratory-data-analysis" class="section level1">
-<h1>Exploratory data analysis</h1>
-<div id="rate-of-abortion-and-public-contraceptive-expenditure-by-state" class="section level2">
-<h2>Rate of abortion and public contraceptive expenditure by state?</h2>
-<pre class="r"><code>merge_data %&gt;% 
-  mutate(hostility = fct_relevel(hostility, c(&quot;hostile&quot;, &quot;leans_hostile&quot;, &quot;middle_ground&quot;, &quot;leans_supportive&quot;, &quot;supportive&quot;))) %&gt;% 
-  ggplot(aes(x = abortion_rate_15_44_state, y = expenditure_rate, color = hostility)) +
-  geom_point(size = 3)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
-</div>
-<div id="rate-of-abortion-by-state" class="section level2">
-<h2>Rate of abortion by state</h2>
-<pre class="r"><code>merge_data %&gt;% 
-  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %&gt;% 
-  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, fill = state_id)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(
-    x = &quot;State&quot;,
-    y = &quot;Abortion rate&quot;,
-    title = &quot;Rate of abortion per 1000 women aged 15-44 by state of residence&quot;
-  ) +
-  theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
-</div>
-<div id="public-expenditure-by-state" class="section level2">
-<h2>Public expenditure by state</h2>
-<pre class="r"><code>merge_data %&gt;% 
-  mutate(state_id = fct_reorder(state_id, expenditure_rate)) %&gt;% 
-  ggplot(aes(x = state_id, y = expenditure_rate, fill = state_id)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(
-    x = &quot;State&quot;,
-    y = &quot;Public expenditure per women in need&quot;,
-    title = &quot;Rate of public expenditure for women aged 15-44 in need of contraception&quot;
-  ) +
-  theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
-<pre class="r"><code>abortion_rate = 
-  merge_data %&gt;% 
-  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, color = state_id)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(
-    x = &quot;State&quot;,
-    y = &quot;Abortion rate&quot;,
-    title = &quot;Rate of abortion per 1000 women aged 15-44 by state of residence&quot;
-  ) +
-  theme(legend.position = &quot;none&quot;, axis.text.x = element_text(angle = 45, hjust = 1)) 
- 
-
-public_expenditure =
-  merge_data %&gt;% 
-  ggplot(aes(x = state_id, y = expenditure_rate, color = state_id)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(
-    x = &quot;State&quot;,
-    y = &quot;Public expenditure per women in need&quot;,
-    title = &quot;Rate of public expenditure for women aged 15-44 in need of contraception&quot;
-  ) +
-  theme(legend.position = &quot;none&quot;, axis.text.x = element_text(angle = 45, hjust = 1))
-
-abortion_rate / public_expenditure</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
-</div>
-<div id="hostility-towards-abortion-in-policy-by-state-and-abortion-rate" class="section level2">
-<h2>Hostility towards abortion in policy by state and abortion rate</h2>
-<pre class="r"><code>merge_data %&gt;% 
-  select(state_id, percent_abortion, abortion_rate_15_44_state ,hostility) %&gt;% 
-  mutate(hostility = as.factor(hostility)) %&gt;% 
-  group_by(hostility) %&gt;% 
-  summarize(
-    n = n(),
-    abortion_rate = mean(abortion_rate_15_44_state)
-  ) %&gt;% 
-  mutate(hostility = fct_relevel(hostility, c(&quot;hostile&quot;, &quot;leans_hostile&quot;, &quot;middle_ground&quot;, &quot;leans_supportive&quot;, &quot;supportive&quot;))) %&gt;% 
-  ggplot(aes(x = hostility, y = abortion_rate, fill = hostility)) +
-  geom_bar(stat = &quot;identity&quot;) + 
-  labs(
-    x = &quot;Hostility towards abortion in policy by state&quot;,
-    y = &quot;Average rate of abortion by state&quot;,
-    title = &quot;Hostility and Abortion Rate&quot;
-  )</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<p><img src="regression_analysis_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
-</div>
-<div id="top-10-states-with-the-highest-abortion-rate" class="section level2">
-<h2>Top 10 states with the highest abortion rate</h2>
-<pre class="r"><code>top_abortion_rate =
-  merge_data %&gt;% 
-  top_n(10, abortion_rate_15_44_state) %&gt;% 
-  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %&gt;% 
-  plot_ly(x = ~abortion_rate_15_44_state, y = ~state_id, type = &#39;bar&#39;, orientation = &#39;h&#39;, width = 900, height = 700, marker = list(color = c(&#39;rgba(222,45,38,1)&#39;, &#39;rgba(222,45,38,1)&#39;, &#39;rgba(222,45,38,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(222,45,38,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;))) %&gt;% 
-  layout(title = &quot;Top 10 states with highest abortion rate&quot;,
-         xaxis = list(title = &quot;Abortion rate&quot;),
-         yaxis = list(title = &quot;State&quot;),
-         showlegend = FALSE)
-
-top_expend_abortion = 
-  merge_data %&gt;% 
-  top_n(10, total_expend_abortion) %&gt;% 
-  mutate(state_id = fct_reorder(state_id, total_expend_abortion)) %&gt;% 
-  plot_ly(x = ~total_expend_abortion, y = ~state_id, type = &#39;bar&#39;, orientation = &#39;h&#39;, width = 900, height = 700, marker = list(color = c(&#39;rgba(222,45,38,1)&#39;, &#39;rgba(222,45,38,1)&#39;, &#39;rgba(204,204,204,1)&#39;,  &#39;rgba(222,45,38,1)&#39;,  &#39;rgba(222,45,38,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;, &#39;rgba(204,204,204,1)&#39;))) %&gt;% 
-  layout(title = &quot;Top 10 states with highest total expend&quot;,
-         xaxis = list(title = &quot;total_expend_abortion&quot;),
-         yaxis = list(title = &quot;State&quot;),
-         showlegend = FALSE)
-
-subplot(top_abortion_rate, top_expend_abortion, shareX = FALSE, shareY = FALSE,
-        titleX = FALSE, titleY = FALSE)</code></pre>
-<pre><code>## Warning: `arrange_()` is deprecated as of dplyr 0.7.0.
-## Please use `arrange()` instead.
-## See vignette(&#39;programming&#39;) for more help
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
-<div id="htmlwidget-ade0302802a411bf0dcc" style="width:900px;height:700px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ade0302802a411bf0dcc">{"x":{"data":[{"x":[17.3,18.2,16.1,17.5,15.2,21.7,28.2,16.5,27.4,16],"y":["CA","CT","DE","FL","GA","MD","NJ","NV","NY","RI"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[32613,1400,5000,906,5580,453,16306,1152,478,5617],"y":["CA","MA","MD","MN","NJ","NM","NY","OR","VT","WA"],"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"],"line":{"color":"rgba(255,127,14,1)"}},"type":"bar","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"anchor":"y"},"xaxis2":{"domain":[0.52,1],"automargin":true,"anchor":"y2"},"yaxis2":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["NM","VT","MN","OR","MA","MD","NJ","WA","NY","CA"],"anchor":"x2"},"yaxis":{"domain":[0,1],"automargin":true,"type":"category","categoryorder":"array","categoryarray":["GA","RI","DE","NV","CA","FL","CT","MD","NY","NJ"],"anchor":"x"},"annotations":[],"shapes":[],"images":[],"width":900,"height":700,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Top 10 states with highest total expend","showlegend":false,"hovermode":"closest"},"attrs":{"20ad2451ea82":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"20ad7dfb0f6e":{"x":{},"y":{},"orientation":"h","marker":{"color":["rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(222,45,38,1)","rgba(222,45,38,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)","rgba(204,204,204,1)"]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
 <div id="statistical-analysis" class="section level2">
 <h2>Statistical analysis</h2>
 <div id="is-there-a-relationship-between-rate-of-abortion-and-hostility-towards-abortion-in-policy-by-state-andor-contraceptive-fundingabortion-access-by-state-all-models-here" class="section level3">
@@ -642,7 +496,6 @@ summary(teenbirth_model)</code></pre>
 ## Residual standard error: 6.848 on 48 degrees of freedom
 ## Multiple R-squared:  0.002973,   Adjusted R-squared:  -0.0178 
 ## F-statistic: 0.1431 on 1 and 48 DF,  p-value: 0.7069</code></pre>
-</div>
 </div>
 </div>
 

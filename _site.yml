@@ -9,6 +9,8 @@ navbar:
       href: regression_analysis.html
     - text: "Full Report"
       href: full_report.html
+    - text: "Dashboard"
+      href: flex_dashboard.html
     - icon: fa-github fa-lg
       href: http://github.com/<maggie-mengyuan-li>/
 output:
