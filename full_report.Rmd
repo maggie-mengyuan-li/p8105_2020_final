@@ -407,11 +407,14 @@ We ran a few different linear regression analyses to round out our exploratory d
 1. Simple linear regression: Is there a relationship between hostility towards abortion and access to abortion?
 
 ```{r}
+# linear model
 hostility_bc_access <- lm(percent_women_no_provider ~ hostility, data = merge_data) 
+
+# table to visualize results
 hostility_bc_access_tbl = hux(
   Outcome = c("Outcome", 
               "Abortion Access", "", "", "", ""), 
-  Predictors = c("Hostility Rating", 
+  Predictors = c("Predictor: Hostility Rating", 
                  "Hostile (Intercept)", 
                  "Leans Hostile", 
                  "Middle Ground", 
@@ -446,16 +449,72 @@ hostility_bc_access_tbl %>%
 2. Simple linear regression: Is there a relationship between hostility towards abortion and abortion rates by state?
 
 ```{r}
+# linear model
 hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data) 
+
+<<<<<<< HEAD
+
+# table to visualize results
+hostility_abortion_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Rate", "", "", "", ""), 
+  Predictors = c("Predictor: Hostility Rating", 
+                 "Hostile (Intercept)", 
+                 "Leans Hostile", 
+                 "Middle Ground", 
+                 "Leans Supportive", 
+                 "Supportive"), 
+  Estimate = c("Estimate", 
+               hostility_model$coefficients[1], 
+               hostility_model$coefficients[2],
+               hostility_model$coefficients[3],
+               hostility_model$coefficients[4],
+               hostility_model$coefficients[5]), 
+  P_value = c("P-value", 
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][1], 
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][2],
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][3],
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][4],
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][5]),
+  add_colnames = FALSE
+)
+hostility_abortion_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
 
 ```
 
 3. Simple linear regression: Is there a relationship between abortion access and abortion rates by state?
 
 ```{r}
+# linear model
 bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
 
-
+# table to visualize results
+bc_access_abortion_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Rate"), 
+  Predictors = c("Predictor: Abortion Access", 
+                 "% Women Living in County w/o Provider"), 
+  Estimate = c("Estimate", 
+               bc_access_model$coefficients[1]), 
+  P_value = c("P-value", 
+              summary(bc_access_model)$coefficients[,"Pr(>|t|)"][1]),
+  add_colnames = FALSE
+)
+bc_access_abortion_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
 
 ```
 
@@ -463,6 +522,48 @@ bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, dat
 
 ```{r}
 hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
+summary(hostility_adj_model)
+
+# table to visualize results
+hostility_bc_abortion_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Rate", 
+              "", 
+              "", 
+              "", 
+              "", 
+              ""), 
+  Predictors = c("Predictor: Abortion Access", 
+                 "Hostile (Intercept)", 
+                 "Leans Hostile", 
+                 "Middle Ground", 
+                 "Leans Supportive", 
+                 "Supportive",
+                 "% Women Living in County w/o Provider"), 
+  Estimate = c("Estimate", 
+               hostility_adj_model$coefficients[1], 
+               hostility_adj_model$coefficients[2],
+               hostility_adj_model$coefficients[3],
+               hostility_adj_model$coefficients[4],
+               hostility_adj_model$coefficients[5],
+               hostility_adj_model$coefficients[6]), 
+  P_value = c("P-value", 
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][1], 
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][2],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][3],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][4],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][5],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][6]),
+  add_colnames = FALSE
+)
+hostility_bc_abortion_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
 ```
 
 
