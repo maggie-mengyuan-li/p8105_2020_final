@@ -3,8 +3,8 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "Map Visualizations"
-      href: data_visualization.html
+    - text: "Maps"
+      href: https://rachelhtao.shinyapps.io/maps/
     - text: "Analysis"
       href: regression_analysis.html
     - text: "Full Report"
