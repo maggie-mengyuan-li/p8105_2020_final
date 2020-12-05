@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Data Tidying &amp; Analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rachelhtao.shinyapps.io/maps/">Maps</a>
+</li>
+<li>
+  <a href="regression_analysis.html">Analysis</a>
+</li>
+<li>
+  <a href="full_report.html">Full Report</a>
+</li>
+<li>
+  <a href="flex_dashboard.html">Dashboard</a>
+</li>
+<li>
+  <a href="http://github.com/&lt;maggie-mengyuan-li&gt;/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Data Tidying &amp; Analysis</h1>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#merge-data-with-hostility-rank">Merge data with hostility rank</a></li>
+<li><a href="#rename-variable-names">Rename variable names</a></li>
+</ul>
+</div>
+
+<p>Pull in data from Guttmacher and tidy (data from 2014-2017)</p>
+<pre class="r"><code>data = 
+  read_csv(&quot;./data/112420_guttmacher data.csv&quot;)%&gt;%
+  select(state_id, measure_name, datum)%&gt;%
+  mutate(datum = as.double(datum))%&gt;%
+  pivot_wider(names_from = measure_name, values_from = datum)%&gt;%
+  janitor:: clean_names()%&gt;%
+  rename(public_expenditures = total_reported_public_expenditures_for_family_planning_client_services_in_000s_of_dollars,
+         no_women_need_public_expenditure = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_aged_13_44)%&gt;%
+  mutate(
+    public_expenditures=as.double(public_expenditures),
+    no_women_need_public_expenditure=as.double(no_women_need_public_expenditure),
+    expenditure_rate = public_expenditures/no_women_need_public_expenditure
+  )                                                                                #create expenditure_rate variable</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   measure_name = col_character(),
+##   datum = col_character(),
+##   state_id = col_character(),
+##   state_name = col_character(),
+##   first_year = col_double(),
+##   last_year = col_character(),
+##   footnotes = col_character(),
+##   sources = col_character()
+## )</code></pre>
+<pre><code>## Warning: Problem with `mutate()` input `datum`.
+## ℹ NAs introduced by coercion
+## ℹ Input `datum` is `as.double(datum)`.</code></pre>
+<pre><code>## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion</code></pre>
+<pre><code>## Warning: Values are not uniquely identified; output will contain list-cols.
+## * Use `values_fn = list` to suppress this warning.
+## * Use `values_fn = length` to identify where the duplicates arise
+## * Use `values_fn = {summary_fun}` to summarise duplicates</code></pre>
+<p>Load state hostility date (from 2010 data** [ ] complete)</p>
+<pre class="r"><code>hostility =
+  read_csv(&quot;./data/state_hostility.csv&quot;)%&gt;%
+  separate(&#39;state_id,Hostility&#39;,c(&#39;state_id&#39;, &#39;hostility&#39;), sep=&quot;,&quot;)%&gt;%
+  mutate(
+    hostility = fct_relevel(hostility, c(&quot;hostile&quot;, &quot;leans_hostile&quot;, &quot;middle_ground&quot;, &quot;leans_supportive&quot;, &quot;supportive&quot;))
+  )</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   `state_id,Hostility` = col_character()
+## )</code></pre>
+<div id="merge-data-with-hostility-rank" class="section level3">
+<h3>Merge data with hostility rank</h3>
+</div>
+<div id="rename-variable-names" class="section level3">
+<h3>Rename variable names</h3>
+<p>[1] <code>state_id</code> = “state_id”<br />
+[2] <code>counties_no_provider</code> = “percent_of_counties_without_a_known_abortion_provider”<br />
+[3] <code>percent_abortion</code> = “percent_of_pregnancies_ending_in_abortion”<br />
+[4] <code>percent_birth</code> = “percent_of_pregnancies_ending_in_birth”<br />
+[5] <code>percent_medicaid</code> = “percent_of_women_aged_15_44_covered_by_medicaid”<br />
+[6] <code>percent_women_no_provider</code> = “percent_of_women_aged_15_44_living_in_a_county_without_an_abortion_provider”<br />
+[7] <code>percent_uninsured</code> = “percent_of_women_aged_15_44_who_are_uninsured”<br />
+[8] <code>percent_bc_18_49</code> = “percent_of_women_aged_18_49_using_contraceptives”<br />
+[9] <code>abortion_rate_15_17_state</code> = “abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_17_by_state_of_residence”<br />
+[10] <code>abortion_rate_15_19_state</code> = “abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_19_by_state_of_residence”<br />
+[11] <code>abortion_rate_15_44_state</code> = “abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_44_by_state_of_residence”<br />
+[12] <code>abortion_rate_18_19_state</code> = “abortion_rate_the_no_of_abortions_per_1_000_women_aged_18_19_by_state_of_residence”<br />
+[13] <code>birthrate_15_17_state</code> = “birthrate_the_no_of_births_per_1_000_women_aged_15_17_by_state_of_residence”<br />
+[14] <code>birthrate_15_19_state</code> = “birthrate_the_no_of_births_per_1_000_women_aged_15_19_by_state_of_residence”<br />
+[15] <code>birthrate_18_19_state</code> = “birthrate_the_no_of_births_per_1_000_women_aged_18_19_by_state_of_residence”<br />
+[16] <code>need_bc_hisp_20_44</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_hispanic_aged_20_44_and_below_250_percent_of_the_federal_poverty_level”<br />
+[17] <code>need_bc_hisp_younger_20</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_hispanic_younger_than_20”<br />
+[18] <code>need_bc_13_44</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_aged_13_44”<br />
+[19] <code>need_bc_black_20_44</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_black_aged_20_44_and_below_250_percent_of_the_federal_poverty_level” [20] <code>need_bc_black_under_20</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_black_younger_than_20”<br />
+[21] <code>need_bc_white_20_44</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_white_aged_20_44_and_below_250_percent_of_the_federal_poverty_level” [22] <code>need_bc_white_under_20</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_white_younger_than_20”<br />
+[23] <code>need_bc_under_20</code> = “no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_younger_than_20”<br />
+[24] <code>total_expend_abortion</code> = “total_reported_public_expenditures_for_abortions_in_000s_of_dollars”<br />
+[25] <code>public_expenditures</code> = “total_reported_public_expenditures_for_family_planning_client_services_in_000s_of_dollars”<br />
+[26] <code>expenditure_rate</code> = “public_expenditures”/“need_bc_13_44”<br />
+[27] <code>hostility</code> = state hostility ranking in 2000 according to Guttmacher</p>
+<pre class="r"><code>merge_data = 
+  merge(data, hostility, by = &quot;state_id&quot;)%&gt;%
+  select(-percent_of_pregnancies_wanted_later_or_unwanted_ending_in_abortion, -percent_of_pregnancies_wanted_later_or_unwanted_ending_in_birth
+         )%&gt;%
+  rename(counties_no_provider = percent_of_counties_without_a_known_abortion_provider,
+         percent_abortion = percent_of_pregnancies_ending_in_abortion,
+         percent_birth = percent_of_pregnancies_ending_in_birth, 
+         percent_medicaid = percent_of_women_aged_15_44_covered_by_medicaid,
+         percent_women_no_provider = percent_of_women_aged_15_44_living_in_a_county_without_an_abortion_provider, 
+         percent_uninsured = percent_of_women_aged_15_44_who_are_uninsured,
+         percent_bc_18_49 = percent_of_women_aged_18_49_using_contraceptives,
+         abortion_rate_15_17_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_17_by_state_of_residence,
+         abortion_rate_15_19_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_19_by_state_of_residence,
+         abortion_rate_15_44_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_44_by_state_of_residence,
+         abortion_rate_18_19_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_18_19_by_state_of_residence,
+         birthrate_15_17_state = birthrate_the_no_of_births_per_1_000_women_aged_15_17_by_state_of_residence,
+         birthrate_15_19_state = birthrate_the_no_of_births_per_1_000_women_aged_15_19_by_state_of_residence,
+         birthrate_18_19_state = birthrate_the_no_of_births_per_1_000_women_aged_18_19_by_state_of_residence,
+         need_bc_hisp_20_44 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_hispanic_aged_20_44_and_below_250_percent_of_the_federal_poverty_level,
+         need_bc_hisp_younger_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_hispanic_younger_than_20,
+         need_bc_13_44 = no_women_need_public_expenditure,
+         need_bc_black_20_44 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_black_aged_20_44_and_below_250_percent_of_the_federal_poverty_level,
+         need_bc_black_under_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_black_younger_than_20, 
+         need_bc_white_20_44 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_white_aged_20_44_and_below_250_percent_of_the_federal_poverty_level,
+         need_bc_white_under_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_white_younger_than_20, 
+         need_bc_under_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_younger_than_20,
+         total_expend_abortion = total_reported_public_expenditures_for_abortions_in_000s_of_dollars
+         )%&gt;%
+    separate(&#39;abortion_rate_15_19_state&#39;,c(NA, &#39;abortion_rate_15_19_state&#39;), sep=&quot;,&quot;)%&gt;%
+    separate(&#39;abortion_rate_15_44_state&#39;,c(NA, &#39;abortion_rate_15_44_state&#39;), sep=&quot;,&quot;)%&gt;% 
+  separate(&#39;birthrate_15_19_state&#39;,c(NA, &#39;birthrate_15_19_state&#39;), sep=&quot;,&quot;)%&gt;%
+    mutate(
+    abortion_rate_15_19_state = str_replace_all(abortion_rate_15_19_state, &quot;\\)&quot;, &quot;&quot;),
+    abortion_rate_15_44_state = str_replace_all(abortion_rate_15_44_state, &quot;\\)&quot;, &quot;&quot;),
+    birthrate_15_19_state = str_replace_all(birthrate_15_19_state, &quot;\\)&quot;, &quot;&quot;)
+    )%&gt;%
+    mutate(
+    abortion_rate_15_19_state = as.numeric(abortion_rate_15_19_state),
+    abortion_rate_15_44_state = as.numeric(abortion_rate_15_44_state),
+    birthrate_15_19_state = as.numeric(birthrate_15_19_state),
+    counties_no_provider = as.numeric(counties_no_provider),
+    percent_abortion = as.numeric(percent_abortion),
+   percent_birth = as.numeric(percent_birth),
+    percent_medicaid = as.numeric(percent_medicaid),
+    percent_women_no_provider = as.numeric(percent_women_no_provider),
+    percent_uninsured = as.numeric(percent_uninsured),
+    percent_bc_18_49 = as.numeric(percent_bc_18_49),
+    abortion_rate_15_17_state = as.numeric(abortion_rate_15_17_state),
+    abortion_rate_15_19_state = as.numeric(abortion_rate_15_19_state),
+    abortion_rate_18_19_state = as.numeric(abortion_rate_18_19_state),
+    birthrate_15_17_state = as.numeric(birthrate_15_17_state),
+     birthrate_18_19_state = as.numeric( birthrate_18_19_state),
+    need_bc_hisp_20_44 = as.numeric(need_bc_hisp_20_44),
+    need_bc_hisp_younger_20 = as.numeric(need_bc_hisp_younger_20),
+     need_bc_black_20_44 = as.numeric( need_bc_black_20_44),
+    need_bc_black_under_20 = as.numeric(need_bc_black_under_20),
+   need_bc_white_20_44 = as.numeric(need_bc_white_20_44),
+    need_bc_white_under_20 = as.numeric(need_bc_white_under_20),
+    need_bc_under_20  = as.numeric(need_bc_under_20),
+   total_expend_abortion  = as.numeric(total_expend_abortion)
+    )</code></pre>
+<pre class="r"><code>write_csv(merge_data, &quot;./data/merge_data.csv&quot;)</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

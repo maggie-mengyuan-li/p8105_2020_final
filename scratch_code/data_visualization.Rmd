@@ -1,0 +1,380 @@
+---
+title: "Spatial Visualization of Data"
+output: html_document
+---
+
+## Simple Univariate Chloropleth Maps using Leaflet
+
+* Hostility rate (although the map already exists for this... so is there a need? maybe we just link it): https://www.guttmacher.org/article/2019/08/state-abortion-policy-landscape-hostile-supportive
+
+#### Load libraries and dataset
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rgdal)
+
+# import US state shapefile from data folder
+all_states <- readOGR("data/cb_2018_us_state_500k/cb_2018_us_state_500k.shp")
+summary(all_states)
+
+
+# read in project data
+merge_data = read_csv("data/merge_data.csv") %>% 
+  rename(STUSPS = state_id) %>% # to match shapefile column name 
+  mutate_if(is.numeric, round, digits = 2) %>%  # round to 2 decimal places
+  mutate(hostility = as.factor(hostility)) %>%
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% # for mapping hostility as a categorical variable
+  mutate(hostility = recode(hostility,
+                            hostile = "Hostile",
+                            leans_hostile = "Leans Hostile",
+                            middle_ground = "Middle Ground",
+                            leans_supportive = "Leans Supportive",
+                            supportie = "Supportive")) # cleaner hostility names for map
+merge_data
+```
+
+#### Join project data with sf file
+```{r}
+data_sf <- merge(all_states, merge_data, all.x = F) 
+summary(data_sf)
+```
+
+#### Abortion rates map
+
+```{r}
+# make color palette
+abortion_rate_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_abortion,
+  reverse = TRUE)
+
+# base map
+base_map <- leaflet(data_sf) %>%
+  addProviderTiles("CartoDB.PositronNoLabels") 
+
+# add in custom labels for percent abortion
+labels_abortion_rate <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_abortion
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_rate_pal(data_sf$percent_abortion),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_rate,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_rate_pal, values = ~percent_abortion, opacity = 0.7, title = 'Abortion Rates by State <br> (% of pregnancies ending in abortions)',
+  position = "bottomright")
+abortion_map
+```
+
+
+#### Public contraceptive expenditure rate map
+
+```{r}
+# make color palette
+bc_fund_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$expenditure_rate,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_bc_fund <- sprintf(
+  "<strong>%s</strong><br/>&#36;%g/woman",
+  data_sf$STUSPS, data_sf$expenditure_rate
+) %>% lapply(htmltools::HTML)
+
+# full map
+bc_fund_map = base_map %>% 
+  addPolygons(
+  fillColor = ~bc_fund_pal(data_sf$expenditure_rate),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_bc_fund,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = bc_fund_pal, values = ~expenditure_rate, opacity = 0.7, title = 'Public Contraceptive Expenditure Rate by State  <br> ($/woman in likely need of publicly-funded services)',
+  position = "bottomright")
+
+bc_fund_map
+
+```
+
+#### Abortion access map
+
+```{r}
+# make color palette
+abortion_access_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_women_no_provider,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_abortion_access <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_women_no_provider
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_access_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_access_pal(data_sf$percent_women_no_provider),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_access,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_access_pal, values = ~percent_women_no_provider, opacity = 0.7, title = 'Percent of women living in a county <br> without access to abortion clinic by State',
+  position = "bottomright")
+
+abortion_access_map
+```
+
+#### Teen birth rates map
+
+```{r}
+# make color palette
+teen_births_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$birthrate_15_19_state,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_teen_births <- sprintf(
+  "<strong>%s</strong><br/> %g births per 1000 women",
+  data_sf$STUSPS, data_sf$birthrate_15_19_state
+) %>% lapply(htmltools::HTML)
+
+
+# full map
+teen_births_map = base_map %>% 
+  addPolygons(
+  fillColor = ~teen_births_pal(data_sf$birthrate_15_19_state),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_teen_births,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = teen_births_pal, values = ~birthrate_15_19_state, opacity = 0.7, title = 'No. of births per 1000 women aged 15-19',
+  position = "bottomright")
+
+teen_births_map
+```
+
+#### Number of Women under 20 in need of accessing publicly-funded contraceptives **don't need to include in final report**
+
+```{r}
+# make color palette
+need_bc_teen_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$need_bc_under_20,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_need_bc_teen <- sprintf(
+  "<strong>%s</strong><br/>%g",
+  data_sf$STUSPS, data_sf$need_bc_under_20
+) %>% lapply(htmltools::HTML)
+
+# full map
+need_bc_teen_map = base_map %>% 
+  addPolygons(
+  fillColor = ~need_bc_teen_pal(data_sf$need_bc_under_20),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_need_bc_teen,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = need_bc_teen_pal, values = ~need_bc_under_20, opacity = 0.7, title = 'No. of women who likely need public support for contraceptive services and supplies younger than 20',
+  position = "bottomright")
+
+need_bc_teen_map
+```
+
+#### Total Number of Women in need of accessing publicly-funded contraceptives **dont need this**
+
+```{r}
+# make color palette
+need_bc_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$need_bc_13_44,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_need_bc <- sprintf(
+  "<strong>%s</strong><br/>%g",
+  data_sf$STUSPS, data_sf$need_bc_13_44
+) %>% lapply(htmltools::HTML)
+
+# full map
+need_bc_map = base_map %>% 
+  addPolygons(
+  fillColor = ~need_bc_pal(data_sf$need_bc_13_44),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_need_bc,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = need_bc_pal, values = ~need_bc_13_44, opacity = 0.7, title = 'Total No. of women who likely need public support for contraceptive services and supplies',
+  position = "bottomright")
+
+need_bc_map
+```
+
+#### State expenditure rate **repeat of map above**
+
+```{r}
+# make color palette
+expenditure_rate_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$expenditure_rate,
+  reverse = TRUE)
+
+# add in custom labels for public contraceptive expenditure
+labels_expenditure_rate <- sprintf(
+  "<strong>%s</strong><br/>%g",
+  data_sf$STUSPS, data_sf$expenditure_rate
+) %>% lapply(htmltools::HTML)
+
+# full map
+expenditure_rate_map = base_map %>% 
+  addPolygons(
+  fillColor = ~expenditure_rate_pal(data_sf$expenditure_rate),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_expenditure_rate,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = expenditure_rate_pal, values = ~expenditure_rate, opacity = 0.7, title = 'Ratio of Total reported public expenditures for family planning client services in 1000s of dollars to number of women in likely need of public support for contraceptive services and supplies',
+  position = "bottomright")
+
+expenditure_rate_map
+```
+
+#### Hostility map
+
+```{r eval=FALSE, include=FALSE}
+# make color palette
+hostility_pal <- colorFactor(
+  palette = "inferno",
+  domain = data_sf$hostility,
+  reverse = F)
+
+# add in custom labels for public contraceptive expenditure
+labels_hostility <- sprintf(
+  "<strong>%s</strong><br/>%s",
+  data_sf$STUSPS, data_sf$hostility
+) %>% lapply(htmltools::HTML)
+
+# full map
+hostility_map = base_map %>% 
+  addPolygons(
+  fillColor = ~hostility_pal(data_sf$hostility),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_hostility,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = hostility_pal, 
+            values = ~hostility, 
+            opacity = 1, 
+            title = 'Hostility Rating towards Abortion Rights in 2010',
+  position = "bottomright")
+
+hostility_map
+```
+
