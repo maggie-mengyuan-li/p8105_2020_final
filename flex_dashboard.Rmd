@@ -1,5 +1,5 @@
 ---
-title: "Flex dashboard"
+title: "A Look Into Abortion Rates, Public Contraceptive Funding, and Abortion Access by State"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns

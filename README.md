@@ -1,6 +1,6 @@
 # Factors Influencing Abortion Rates in the US
 
-Welcome to the github project repository for the Fall 2020 P8105 Final Projecton Factors Influencing Abortion Rates in the US, by Nancy Fang, Maggie Li, Rachel Tao, and Linh Tran. 
+Welcome to the github project repository for the Fall 2020 P8105 Final Project, **Factors Influencing Abortion Rates in the US**, by Nancy Fang, Maggie Li, Rachel Tao, and Linh Tran. 
 
 ### Project Overview
 
