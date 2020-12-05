@@ -32,5 +32,7 @@ library("vembedr")
 
 `r embed_url("https://vimeo.com/487630185")`
 
+<h3>Contributors: Linh | Mengyuan (Maggie) | Nancy | Rachel </h3>
+
 
 
