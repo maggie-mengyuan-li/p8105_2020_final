@@ -164,10 +164,116 @@ merge_data =
 write_csv(merge_data, "./data/merge_data.csv")
 ```
 
-## Descriptive Graphs
 
-```{r include = FALSE}
-merge_data = read_csv("data/merge_data.csv")
+# Exploratory Analysis
+
+
+### Rate of abortion and public expenditure for family planning services by state
+
+This graph shows abortion rate (per 1000 women aged 15-44) and public expenditure rate (total public expenditure divided by the number of women in reproductive age in need in that state) for all 50 states, color coded by the level of hostility to or support of abortion policy in each state. 
+
+```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
+merge_data %>% 
+  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, fill = hostility)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Abortion rate",
+    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
+  ) +
+  theme(legend.position = "bottom")
+  theme(legend.position = "none")
+```
+
+
+```{r, fig.height = 12, fig.width = 12, fig.asp = .6}
+abortion_rate = 
+  merge_data %>% 
+  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, fill = hostility)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Abortion rate",
+    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
+  ) +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) 
+ 
+
+public_expenditure =
+  merge_data %>% 
+  ggplot(aes(x = state_id, y = expenditure_rate, fill= hostility)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "State",
+    y = "Public expenditure per women in need",
+    title = "Rate of public expenditure for women aged 15-44 in need of contraception"
+  ) +
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
+
+abortion_rate / public_expenditure
+```
+
+### Scatterplot comparing abortion rates and public expenditure on contraceptives 
+
+Existing literature suggests state funding for abortions and family planning produced public health benefits, namely reducing unwanted pregnancies and thus lower abortion rate as well as better mother and infant health. We want to generate a plot to look at the relationship between public expenditure on family planning services including contraception for women in need and the rate of abortion. We divide the total reported public expenditures for family planning services by the number of women in reproductive age in each state to get the expenditure rate for each state, which may not be accurately reflective of each's state demographic as well as the cost of abortion. 
+
+```{r, warning = FALSE, message = FALSE}
+expenditure_rate = 
+  merge_data %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>% 
+  ggplot(aes(x = expenditure_rate, y = abortion_rate_15_44_state, color = hostility)) + 
+  geom_point(size = 3) + theme_bw(base_size = 20) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") 
+
+ggplotly(expenditure_rate, text = ~str_c("State: ", state_id), autosize = F, width = 900, height = 600) %>% 
+    layout(autosize = F,
+    yaxis = list(title = "Abortion rate (per 1,000 women aged 15-44)"),
+    xaxis = list(title = "Public expenditure rate (per number of women in need)"),
+    title = "Public expenditure rate and abortion rate",
+    legend = list(font = list(size = 12))
+  ) %>% 
+  layout(
+    xaxis = list(titlefont = list(size = 16)),
+    yaxis = list(titlefont = list(size = 16)),
+    title = list(titlefont = list(size = 20))
+  )
+```
+
+### Hostility towards abortion in policy by state and abortion rate
+
+Another variable we thought would have a relationship to abortion rate was each state's abortion policy demonstrates hostility to or support of abortion rights. Each state is placed in one of five categories according to the Guttmacher Institute, including hostile, leans hostile, middle ground, leans supportive and supportive. We believe that the more supportive a state is towards abortion rights, the higher the abortion rate in that state. 
+
+```{r, fig.height = 9, fig.width = 6, fig.asp = .6, warning = FALSE, message = FALSE}
+merge_data %>% 
+  select(state_id, percent_abortion, abortion_rate_15_44_state ,hostility) %>% 
+  mutate(hostility = as.factor(hostility)) %>% 
+  group_by(hostility) %>% 
+  summarize(
+    n = n(),
+    abortion_rate = mean(abortion_rate_15_44_state)
+  ) %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  ggplot(aes(x = hostility, y = abortion_rate, fill = hostility)) +
+  geom_bar(stat = "identity", width = .6) + 
+  labs(
+    x = "Hostility towards abortion in policy by state",
+    y = "Average rate of abortion by state",
+    title = "Hostility and Abortion Rate"
+  )
+```
+
+### Public expenditures and percent of women living in counties with no provider 
+
+```{r, warning = FALSE, message = FALSE}
+merge_data %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>% 
+  ggplot(aes(x = public_expenditures, y = percent_women_no_provider, color = hostility)) + 
+  geom_point(size = 3) + theme_bw(base_size = 20) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") 
+
 ```
 
 ### Scatterplot comparing abortion rates and public expenditure on contraceptives 
