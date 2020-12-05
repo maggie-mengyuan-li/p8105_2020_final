@@ -31,3 +31,4 @@ Please be sure to download the following packages to ensure that you can knit th
 `install.packages("devtools")`   
 `install.packages("modelr")`   
 `install.packages("mgcv")`
+`install.packages("vembedr")`
