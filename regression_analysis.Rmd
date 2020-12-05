@@ -1,5 +1,5 @@
 ---
-title: "Analysis"
+title: "Statistical Analysis"
 author: "Linh, Maggie, Nancy, Rachel"
 output: 
   html_document:
@@ -38,8 +38,7 @@ scale_fill_discrete = scale_fill_viridis_d
 ```{r include = FALSE}
 merge_data = read_csv("data/merge_data.csv")
 ```
-
-## Statistical analysis
+## Statistical Analysis 
 
 ### Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/abortion access by state? **ALL MODELS HERE**
 
