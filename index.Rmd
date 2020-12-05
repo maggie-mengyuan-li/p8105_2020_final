@@ -7,3 +7,17 @@ output:
     theme: journal
 ---
 
+# Introduction  
+
+Abortion is a common medical procedure in the United States. Abortion rates are declining across the country which is thought to be related to decrease in pregnancies (Nash 2019). Abortion rates differ depending on the state due to various factors, including access to abortion and legislative restrctions.  We aimed to perform an exploratory analysis of abortion rates related to percent of women with access to an abortion provider per state and number of policies that support or restrict abortion access. In addition, we explored each state’s abortion rate and expenditure on contraception.
+
+
+# Data  
+
+The data are pulled from the Guttmacher Institute, which is a research organization founded in 1968 working to study, educate, and advance sexual and reproductive health and rights. The [Guttmacher Institute Data Center](https://data.guttmacher.org/) provides public-access birth, abortion, and contraceptive use demographic data at the national and state levels, and contraceptive use data only at the county level. Since we are interested in examining multiple study outcomes—abortion rates, contraceptive funding/access, and teen birth rates—we pulled these data at the finest resolution possible, aggregated at the state level, for all 50 US States. 
+
+Data for hostility towards abortion was collated from [August 2019 Guttmacher Institute Policy Analysis](https://www.guttmacher.org/article/2019/08/state-abortion-policy-landscape-hostile-supportive).
+
+# Findings  
+
+Our findings show that access to abortion provider is a significant predictor of state-level abortion rates. Hostility does not appear to be a significant predictor for abortion rates, particularly once adjusted for access to abortion provider. This suggests that accessibility may be a more relevant factor in predicting abortion rates at the state level, regardless of legislative barriers to abortion. Future studies can examine regional-level or individual-level reproductive health outcomes, and examine other socio-demographic characteristics that may influence access, such as income, race, education, and mobility.

@@ -43,26 +43,10 @@ Column {data-width=500}
 ### Public Expenditures on Contraceptive Access and Abortion Rates by State
 
 ```{r, message = FALSE, warning = FALSE}
-expenditure_rate = 
-  merge_data %>% 
+merge_data %>% 
   mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
-  mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>% 
-  ggplot(aes(x = expenditure_rate, y = abortion_rate_15_44_state, color = hostility)) + 
-  geom_point(size = 3) + theme_bw(base_size = 20) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") 
-
-ggplotly(expenditure_rate, text = ~str_c("State: ", state_id), autosize = F, width = 900, height = 600) %>% 
-    layout(autosize = F,
-    yaxis = list(title = "Abortion rate (per 1,000 women aged 15-44)"),
-    xaxis = list(title = "Public expenditure rate (per number of women in need)"),
-    title = "Public expenditure rate and abortion rate",
-    legend = list(font = list(size = 12))
-  ) %>% 
-  layout(
-    xaxis = list(titlefont = list(size = 16)),
-    yaxis = list(titlefont = list(size = 16)),
-    title = list(titlefont = list(size = 20))
-  )
+  mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>%
+  plot_ly(x = ~expenditure_rate, y = ~abortion_rate_15_44_state, type = "scatter", text = ~text_label, mode = "markers", color = ~hostility)
 ```
 
 Column {data-width=500}

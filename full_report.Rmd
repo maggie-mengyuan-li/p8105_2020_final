@@ -37,10 +37,11 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 # Motivation
-For this project, we aim to examine state-level sociodemographic factors that may influence abortion rate. State family planning policies vary widely, with some states more hostile to women attempting to access an abortion, and others more supportive (Nash 2019). One study showed that of women who received a nonhospital abortion, 24% traveled at least 50 miles from their home to an abortion facility (Henshaw 1995). We plan to investigate the relationship between hostility towards abortion, within-county abortion provider access, and abortion rate.  We are interested in visualizing these data to hopefully help disseminate this information in a digestible way to inform outreach/education strategies and policy.
+For this project, we aim to examine state-level sociodemographic factors that may influence abortion rate. State family planning policies vary widely, with some states more hostile to women attempting to access an abortion, and others more supportive ([Nash 2019](https://www.guttmacher.org/article/2019/08/state-abortion-policy-landscape-hostile-supportive)). One study showed that of women who received a nonhospital abortion, 24% traveled at least 50 miles from their home to an abortion facility ([Henshaw 1995](https://pubmed.ncbi.nlm.nih.gov/7796896/)). We plan to investigate the relationship between hostility towards abortion, within-county abortion provider access, and abortion rate.  We are interested in visualizing these data to hopefully help disseminate this information in a digestible way to inform outreach/education strategies and policy.
 
 # Related Work
-We are additionally interested in the relationship between teen birth rate, public expenditures for contraception, and hostility. 
+We were inspired to explore the relationship between abortion rates, abortion access and state policies because were are reproductive rights advocates and supporters. Despite being a common and necessary medical procedure, abortion is an increasingly political topic, gaining national attention in high-profile Supreme Court cases ([Whole Woman's Health v. Hellerstedt](https://www.oyez.org/cases/2015/15-274), [June Medical Services LLC v. Russo](https://www.oyez.org/cases/2019/18-1323)). We hope our visualizations and analyses provide context for factors between abortion rates, abortion access, and hostility towards abortion.
+
 
 # Research Questions
 We were mainly interested in addressing broadly the relationship between abortion access, hostility towards abortion, and abortion rates by state. Specifically:
@@ -61,9 +62,9 @@ We downloaded a .csv file from the [Guttmacher Institute Data Center](https://da
 
 Data was available for each variable for all 50 states. We collated state hostility data from a [publicly available .pdf](https://www.guttmacher.org/sites/default/files/article_files/hostile_and_supportive_state_abortion_laws_1-24-2020.pdf) on the Guttmacher Institute website and merged the datasets together.
 
-The variables we are interested in are as follows:
+The variables we are interested in are as follows:  
 
-**VARIABLE NAME =  Variable Description**
+**VARIABLE NAME =  Variable Description**  
 `state_id` = State                                                                                                     
 `percent_abortion` = % of pregnancies ending in abortion                                                                                                                                                                                                                                   
 `percent_women_no_provider` = % of women aged 15-44 covered by Medicaid living in a county without an abortion provider                                                                                                                                                         
@@ -166,49 +167,16 @@ write_csv(merge_data, "./data/merge_data.csv")
 
 ## Descriptive graphs
 
-### Rate of abortion and public expenditure for family planning services by state
-
-This graph shows abortion rate (per 1000 women aged 15-44) and public expenditure rate (total public expenditure divided by the number of women in reproductive age in need in that state) for all 50 states, color coded by the level of hostility to or support of abortion policy in each state. 
-
-```{r, fig.height = 6, fig.width = 12, fig.asp = .6, warning = FALSE, message = FALSE}
-merge_data %>% 
-  mutate(state_id = fct_reorder(state_id, abortion_rate_15_44_state)) %>% 
-  ggplot(aes(x = state_id, y = abortion_rate_15_44_state, fill = hostility)) +
-  geom_bar(stat = "identity") +
-  labs(
-    x = "State",
-    y = "Abortion rate",
-    title = "Rate of abortion per 1000 women aged 15-44 by state of residence"
-  ) +
-  theme(legend.position = "bottom")
-  theme(legend.position = "none")
-```
-
-### Scatterplot comparing abortion rates and public expenditure on contraceptives 
+### Figure 1. Scatterplot comparing abortion rates and public expenditure on contraceptives by state
 
 Existing literature suggests state funding for abortions and family planning produced public health benefits, namely reducing unwanted pregnancies and thus lower abortion rate as well as better mother and infant health. We want to generate a plot to look at the relationship between public expenditure on family planning services including contraception for women in need and the rate of abortion. We divide the total reported public expenditures for family planning services by the number of women in reproductive age in each state to get the expenditure rate for each state, which may not be accurately reflective of each's state demographic as well as the cost of abortion. 
 
-```{r, warning = FALSE, message = FALSE}
-expenditure_rate = 
-  merge_data %>% 
-  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
-  mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>% 
-  ggplot(aes(x = expenditure_rate, y = abortion_rate_15_44_state, color = hostility)) + 
-  geom_point(size = 3) + theme_bw(base_size = 20) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") 
 
-ggplotly(expenditure_rate, text = ~str_c("State: ", state_id), autosize = F, width = 900, height = 600) %>% 
-    layout(autosize = F,
-    yaxis = list(title = "Abortion rate (per 1,000 women aged 15-44)"),
-    xaxis = list(title = "Public expenditure rate (per number of women in need)"),
-    title = "Public expenditure rate and abortion rate",
-    legend = list(font = list(size = 12))
-  ) %>% 
-  layout(
-    xaxis = list(titlefont = list(size = 16)),
-    yaxis = list(titlefont = list(size = 16)),
-    title = list(titlefont = list(size = 20))
-  )
+```{r, warning = FALSE, message = FALSE}
+merge_data %>% 
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% 
+  mutate(text_label = str_c("State: ", state_id, "\nHostility: ", hostility)) %>%
+  plot_ly(x = ~expenditure_rate, y = ~abortion_rate_15_44_state, type = "scatter", text = ~text_label, mode = "markers", color = ~hostility)
 ```
 
 
@@ -243,7 +211,7 @@ data_sf <- merge(all_states, merge_data, all.x = F)
 
 We then created a universal basemap and for each map, we created a continuous-scale color palette.
 
-### Abortion Rates
+### Figure 2. Abortion Rates
 
 ```{r}
 # make color palette
@@ -287,7 +255,7 @@ abortion_map = base_map %>%
 abortion_map
 ```
 
-### Public Contraceptive Expenditure Rates
+### Figure 3. Public Contraceptive Expenditure Rates
 
 ```{r}
 # make color palette
@@ -328,7 +296,7 @@ bc_fund_map = base_map %>%
 bc_fund_map
 ```
 
-### Percent of Women Without Access to Abortion Provider in County of Residence
+### Figure 4. Percent of Women Without Access to Abortion Provider in County of Residence
 
 ```{r}
 # make color palette
@@ -369,7 +337,7 @@ abortion_access_map = base_map %>%
 abortion_access_map
 ```
 
-### Teen Birth Rates
+### Figure 5. Teen Birth Rates
 
 ```{r}
 # make color palette
@@ -411,7 +379,7 @@ teen_births_map = base_map %>%
 teen_births_map
 ```
 
-### Hostility toward Abortion Rights by State in 2010
+### Figure 6. Hostility toward Abortion Rights by State in 2010
 
 ```{r}
 # make color palette
