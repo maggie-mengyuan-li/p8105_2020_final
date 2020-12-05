@@ -10,14 +10,36 @@ output:
 library(flexdashboard)
 library(plotly)
 library(tidyverse)
+library(leaflet)
+library(sf)
+library(rgdal)
+
+# read in project data
 merge_data = read_csv("data/merge_data.csv")
+
+# import US state shapefile from data folder
+all_states <- readOGR("data/cb_2018_us_state_500k/cb_2018_us_state_500k.shp")
+
+# prepare merge_data for mapping
+merge_data_map = merge_data %>% 
+  rename(STUSPS = state_id) %>% # to match shapefile column name 
+  mutate_if(is.numeric, round, digits = 2) %>%  # round to 2 decimal places
+  mutate(hostility = as.factor(hostility)) %>%
+  mutate(hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))) %>% # for mapping hostility as a categorical variable
+  mutate(hostility = recode(hostility,
+                            hostile = "Hostile",
+                            leans_hostile = "Leans Hostile",
+                            middle_ground = "Middle Ground",
+                            leans_supportive = "Leans Supportive",
+                            supportive = "Supportive")) # cleaner hostility names for map
+data_sf <- merge(all_states, merge_data_map, all.x = F) 
 ```
 
 
-Column {data-width=650}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Chart A
+### Public Expenditures on Contraceptive Access and Abortion Rates by State
 
 ```{r}
 merge_data %>% 
@@ -30,18 +52,91 @@ merge_data %>%
   )
 ```
 
-Column {data-width=350}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Chart B
+### Abortion Rates by State
 
 ```{r}
+# make color palette
+abortion_rate_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_abortion,
+  reverse = TRUE)
 
+# base map
+base_map <- leaflet(data_sf) %>%
+  addProviderTiles("CartoDB.PositronNoLabels") 
+
+# add in custom labels for percent abortion
+labels_abortion_rate <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_abortion
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_rate_pal(data_sf$percent_abortion),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_rate,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_rate_pal, values = ~percent_abortion, opacity = 0.7, title = 'Abortion Rates by State <br> (% of pregnancies ending in abortions)',
+  position = "bottomright")
+abortion_map
 ```
 
-### Chart C
+### % Women Without Access to Abortion Provider in County of Residence
 
 ```{r}
+# make color palette
+abortion_access_pal <- colorNumeric(
+  palette = "inferno",
+  domain = data_sf$percent_women_no_provider,
+  reverse = TRUE)
 
+# add in custom labels for public contraceptive expenditure
+labels_abortion_access <- sprintf(
+  "<strong>%s</strong><br/>%g&#37;",
+  data_sf$STUSPS, data_sf$percent_women_no_provider
+) %>% lapply(htmltools::HTML)
+
+# full map
+abortion_access_map = base_map %>% 
+  addPolygons(
+  fillColor = ~abortion_access_pal(data_sf$percent_women_no_provider),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray = "",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = labels_abortion_access,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(pal = abortion_access_pal, values = ~percent_women_no_provider, opacity = 0.7, title = 'Percent of women living in a county <br> without access to abortion clinic by State',
+  position = "bottomright")
+
+abortion_access_map
 ```
 

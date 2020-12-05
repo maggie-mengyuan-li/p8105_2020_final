@@ -267,8 +267,8 @@ To create the maps of our relevant variables, we first read in a US state shapef
 # import US state shapefile from data folder
 all_states <- readOGR("data/cb_2018_us_state_500k/cb_2018_us_state_500k.shp")
 
-# read in project data
-merge_data = read_csv("data/merge_data.csv") %>% 
+# read in project data and tidy
+merge_data_map = read_csv("data/merge_data.csv") %>% 
   rename(STUSPS = state_id) %>% # to match shapefile column name 
   mutate_if(is.numeric, round, digits = 2) %>%  # round to 2 decimal places
   mutate(hostility = as.factor(hostility)) %>%
@@ -285,7 +285,7 @@ merge_data = read_csv("data/merge_data.csv") %>%
 We then joined the Guttmacher data to the shapefile.
 
 ```{r}
-data_sf <- merge(all_states, merge_data, all.x = F) 
+data_sf <- merge(all_states, merge_data_map, all.x = F) 
 ```
 
 We then created a universal basemap and for each map, we created a continuous-scale color palette.
