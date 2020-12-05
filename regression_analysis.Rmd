@@ -1,8 +1,11 @@
 ---
 title: "Analysis"
-author: "Linh Tran"
-date: "11/30/2020"
-output: html_document
+author: "Linh, Maggie, Nancy, Rachel"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}

@@ -9,9 +9,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Linh Tran" />
+<meta name="author" content="Linh, Maggie, Nancy, Rachel" />
 
-<meta name="date" content="2020-11-30" />
 
 <title>Analysis</title>
 
@@ -21,7 +20,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -249,7 +252,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -259,6 +328,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -303,24 +382,21 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Analysis</h1>
-<h4 class="author">Linh Tran</h4>
-<h4 class="date">11/30/2020</h4>
+<h4 class="author">Linh, Maggie, Nancy, Rachel</h4>
 
 </div>
 
-<div id="TOC">
-<ul>
-<li><a href="#statistical-analysis">Statistical analysis</a><ul>
-<li><a href="#is-there-a-relationship-between-rate-of-abortion-and-hostility-towards-abortion-in-policy-by-state-andor-contraceptive-fundingabortion-access-by-state-all-models-here">Is there a relationship between rate of abortion and hostility towards abortion in policy by state and/or contraceptive funding/abortion access by state? <strong>ALL MODELS HERE</strong></a></li>
-<li><a href="#is-there-a-relationship-between-rate-of-abortion-and-public-contraceptive-expenditure-by-state-probably-not-going-to-use">Is there a relationship between rate of abortion and public contraceptive expenditure by state? <strong>probably not going to use</strong></a></li>
-<li><a href="#is-there-a-relationship-between-rate-of-abortion-and-abortion-access-by-state-moved-to-chunk-above">Is there a relationship between rate of abortion and abortion access by state? <strong>moved to chunk above</strong></a></li>
-<li><a href="#is-there-a-relationship-between-teen-birth-rate-and-percent-of-women-in-need-of-publicly-funded-contraceptive-resources-probably-not-going-to-use">Is there a relationship between teen birth rate and percent of women in need of publicly-funded contraceptive resources? <strong>probably not going to use</strong></a></li>
-</ul></li>
-</ul>
-</div>
 
 <div id="statistical-analysis" class="section level2">
 <h2>Statistical analysis</h2>
@@ -501,6 +577,8 @@ summary(teenbirth_model)</code></pre>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -532,7 +610,38 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
