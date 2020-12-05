@@ -21,3 +21,5 @@ Data for hostility towards abortion was collated from [August 2019 Guttmacher In
 # Findings  
 
 Our findings show that access to abortion provider is a significant predictor of state-level abortion rates. Hostility does not appear to be a significant predictor for abortion rates, particularly once adjusted for access to abortion provider. This suggests that accessibility may be a more relevant factor in predicting abortion rates at the state level, regardless of legislative barriers to abortion. Future studies can examine regional-level or individual-level reproductive health outcomes, and examine other socio-demographic characteristics that may influence access, such as income, race, education, and mobility.
+
+For a brief overview of our website, view our screencast [here]()

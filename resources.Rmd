@@ -1,0 +1,16 @@
+---
+title: "Resources"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: journal
+---
+
+[The Guttmacher Institute](https://data.guttmacher.org/): The Guttmacher Institute is a leading research and policy organization committed to advancing sexual and reproductive health and rights in the United States and globally.
+
+[The Turnaway Study](https://www.ansirh.org/research/turnaway-study):  Advancing New Standards in Reproductive Health (ANSIRH) conducted a prospective longitudinal study examining the effects of unintended pregnancy on women’s lives. The major aim of the study is to describe the mental health, physical health, and socioeconomic consequences of receiving an abortion compared to carrying an unwanted pregnancy to term.
+
+[Center for Reproductive Rights](http://www.reproductiverights.org/about-us): The Center for Reproductive Rights uses the power of law to advance reproductive rights as fundamental human rights around the world.
+
+[Sister Song](http://www.sistersong.net): SisterSong is a Southern based, national membership organization; our purpose is to build an effective network of individuals and organizations to improve institutional policies and systems that impact the reproductive lives of marginalized communities.
