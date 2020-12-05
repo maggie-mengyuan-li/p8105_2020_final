@@ -1,0 +1,103 @@
+---
+title: "Maps"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(flexdashboard)
+library(shiny)
+library(plotly)
+library(tidyverse)
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# read in project data
+merge_data = read_csv("./data/merge_data.csv") %>% 
+  mutate_if(is.numeric, round, digits = 2) %>%  # round to 2 decimal places
+  select(state_id, percent_abortion, percent_women_no_provider, expenditure_rate, birthrate_15_19_state) %>% 
+  rename(
+    state = state_id,
+    "% pregnancies ending in abortion" = percent_abortion,
+    "% living in a county with no abortion provider" = percent_women_no_provider,
+    "Contraceptive Expenditure Rate" = expenditure_rate,
+    "Teen Birth Rate" = birthrate_15_19_state
+  ) %>% 
+  pivot_longer("% pregnancies ending in abortion":"Teen Birth Rate",
+    names_to = "type_variable",
+    values_to = "Measure"
+  )
+
+```
+
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r echo = FALSE}
+type_variable <- (merge_data %>% distinct(type_variable) %>% pull())
+
+selectInput("variable_type", label = h3("Family planning variable"),
+            choices = type_variable, selected = "Abortion Rate")
+
+```
+
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### US MAP
+
+```{r echo=FALSE}
+renderPlotly({
+  geo1 <- list(
+    scope = "usa",
+    projection = list(type =  "state"),
+    showlakes = TRUE,
+    lakecolor = toRGB("white")
+  )
+  
+  merge_data %>% 
+    filter(type_variable == input$variable_type) %>% 
+    plot_geo(locationmode = "USA-states") %>% 
+    add_trace(
+      z = ~Measure,
+      locations = ~state,
+      color = ~Measure,
+      colors = "inferno",
+      reversescale = TRUE,
+      text = ~paste(type_variable)
+    ) %>% 
+    layout(
+      geo = geo1,
+      title = "Family Planning Statistics by State",
+      legend = list(x = 100, y = 0.5)
+    )
+})
+
+
+```
+
+### Variable Descriptions
+
+**% pregnancies ending in abortion**
+Percent of pregnancies in a given state that ended in abortion
+
+**% living in a county with no abortion provider**
+Percent of women aged 15-44 living in a county that does not have an abortion provider
+
+**Contraceptive Expenditure Rate**
+Total state public funding for contraception divided by the number of women aged 13-44 in likely need of contraceptive services and supplies
+
+**Teen Birth Rate**
+Number of births per 1000 women aged 15-19
+
+```{r eval=FALSE, include=FALSE}
+#rsconnect::deployApp("./maps.Rmd")
+```
