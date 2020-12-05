@@ -43,8 +43,8 @@ Column {.sidebar}
 ```{r echo = FALSE}
 type_variable <- (merge_data %>% distinct(type_variable) %>% pull())
 
-selectInput("variable_type", label = h3("Family planning variable"),
-            choices = type_variable, selected = "Abortion Rate")
+# selectInput("variable_type", label = h3("Family planning variable"),
+#             choices = type_variable, selected = "Abortion Rate")
 
 ```
 
