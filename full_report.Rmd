@@ -54,11 +54,13 @@ The data are pulled from the Guttmacher Institute, which is a research organizat
 
 # Exploratory Analysis
 
+## Descriptive Graphs
+
 ```{r include = FALSE}
 merge_data = read_csv("data/merge_data.csv")
 ```
 
-## Scatterplot comparing abortion rates and public expenditure on contraceptives 
+### Scatterplot comparing abortion rates and public expenditure on contraceptives 
 
 ```{r, fig.height = 12, fig.width = 6}
 merge_data %>% 
@@ -73,7 +75,7 @@ merge_data %>%
 ```
 
 
-## Rate of abortion by state
+### Rate of abortion by state
 
 ```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
 merge_data %>% 
@@ -88,7 +90,7 @@ merge_data %>%
   theme(legend.position = "none")
 ```
 
-## Public expenditure by state
+### Public expenditure by state
 
 ```{r, fig.height = 6, fig.width = 12, fig.asp = .6}
 merge_data %>% 
@@ -104,7 +106,7 @@ merge_data %>%
   
 ```
 
-## Abortion Rate and Public Expenditure -- 
+### Abortion Rate and Public Expenditure
 
 ```{r, fig.height = 12, fig.width = 12, fig.asp = .6}
 abortion_rate = 
@@ -133,7 +135,7 @@ public_expenditure =
 abortion_rate / public_expenditure
 ```
 
-## Hostility towards abortion in policy by state and abortion rate
+### Hostility towards abortion in policy by state and abortion rate
 
 ```{r, fig.height = 9, fig.width = 9, fig.asp = .6}
 merge_data %>% 
@@ -174,7 +176,7 @@ merge_data = read_csv("data/merge_data.csv") %>%
                             leans_hostile = "Leans Hostile",
                             middle_ground = "Middle Ground",
                             leans_supportive = "Leans Supportive",
-                            supportie = "Supportive")) # cleaner hostility names for map
+                            supportive = "Supportive")) # cleaner hostility names for map
 
 ```
 
@@ -186,7 +188,7 @@ data_sf <- merge(all_states, merge_data, all.x = F)
 
 We then created a universal basemap and for each map, we created a continuous-scale color palette.
 
-**Abortion Rates**
+### Abortion Rates
 
 ```{r}
 # make color palette
@@ -230,7 +232,7 @@ abortion_map = base_map %>%
 abortion_map
 ```
 
-**Public Contraceptive Expenditure Rates**
+### Public Contraceptive Expenditure Rates
 
 ```{r}
 # make color palette
@@ -271,7 +273,7 @@ bc_fund_map = base_map %>%
 bc_fund_map
 ```
 
-**Percent of Women Without Access to Abortion Provider in County of Residence**
+### Percent of Women Without Access to Abortion Provider in County of Residence
 
 ```{r}
 # make color palette
@@ -312,7 +314,7 @@ abortion_access_map = base_map %>%
 abortion_access_map
 ```
 
-**Teen Birth Rates**
+### Teen Birth Rates
 
 ```{r}
 # make color palette
@@ -354,7 +356,7 @@ teen_births_map = base_map %>%
 teen_births_map
 ```
 
-**Hostility toward Abortion Rights by State in 2010**
+### Hostility toward Abortion Rights by State in 2010
 
 ```{r}
 # make color palette
@@ -398,20 +400,25 @@ hostility_map = base_map %>%
 hostility_map
 ```
 
-## RACHEL Map ShinyApp
+## ShinyApp for Maps
 
-# MAGGIE Regression Models
+We also rendered an additional interactive shinyapp for the maps, viewable [here](https://rachelhtao.shinyapps.io/maps/).
+
+# Regression Models
 
 We ran a few different linear regression analyses to round out our exploratory data analysis. The tables below summarizes the effect estimates we found for these models:
 
-1. Simple linear regression: Is there a relationship between hostility towards abortion and access to abortion?
+#### Table 1. Simple linear regression: Is there a relationship between hostility towards abortion and access to abortion?
 
 ```{r}
+# linear model
 hostility_bc_access <- lm(percent_women_no_provider ~ hostility, data = merge_data) 
+
+# table to visualize results
 hostility_bc_access_tbl = hux(
   Outcome = c("Outcome", 
-              "Abortion Access", "", "", "", ""), 
-  Predictors = c("Hostility Rating", 
+              "% Women Living in County w/o Provider", "", "", "", ""), 
+  Predictors = c("Predictor", 
                  "Hostile (Intercept)", 
                  "Leans Hostile", 
                  "Middle Ground", 
@@ -443,27 +450,129 @@ hostility_bc_access_tbl %>%
 ```
 
 
-2. Simple linear regression: Is there a relationship between hostility towards abortion and abortion rates by state?
+#### Table 2. Simple linear regression: Is there a relationship between hostility towards abortion and abortion rates by state?
 
 ```{r}
+# linear model
 hostility_model = lm(abortion_rate_15_44_state ~ hostility, data = merge_data) 
+
+# table to visualize results
+hostility_abortion_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Rate", "", "", "", ""), 
+  Predictors = c("Predictor", 
+                 "Hostile (Intercept)", 
+                 "Leans Hostile", 
+                 "Middle Ground", 
+                 "Leans Supportive", 
+                 "Supportive"), 
+  Estimate = c("Estimate", 
+               hostility_model$coefficients[1], 
+               hostility_model$coefficients[2],
+               hostility_model$coefficients[3],
+               hostility_model$coefficients[4],
+               hostility_model$coefficients[5]), 
+  P_value = c("P-value", 
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][1], 
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][2],
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][3],
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][4],
+              summary(hostility_model)$coefficients[,"Pr(>|t|)"][5]),
+  add_colnames = FALSE
+)
+hostility_abortion_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
 
 ```
 
-3. Simple linear regression: Is there a relationship between abortion access and abortion rates by state?
+#### Table 3. Simple linear regression: Is there a relationship between abortion access and abortion rates by state?
 
 ```{r}
+# linear model
 bc_access_model <- lm(abortion_rate_15_44_state ~ percent_women_no_provider, data = merge_data) 
 
 
+# table to visualize results
+bc_access_abortion_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Rate"), 
+  Predictors = c("Predictor", 
+                 "% Women Living in County w/o Provider"), 
+  Estimate = c("Estimate", 
+               bc_access_model$coefficients[2]), 
+  P_value = c("P-value", 
+              summary(bc_access_model)$coefficients[,"Pr(>|t|)"][2]),
+  add_colnames = FALSE
+)
+bc_access_abortion_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
 
 ```
 
-# Multivariate regression: Is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
+#### Table 4. Multivariate regression: Is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
 
 ```{r}
 hostility_adj_model = lm(abortion_rate_15_44_state ~ hostility + percent_women_no_provider, data = merge_data)
+
+# table to visualize results
+hostility_bc_abortion_tbl = hux(
+  Outcome = c("Outcome", 
+              "Abortion Rate", 
+              "", 
+              "", 
+              "", 
+              "", 
+              ""), 
+  Predictors = c("Predictor", 
+                 "Hostile (Intercept)", 
+                 "Leans Hostile", 
+                 "Middle Ground", 
+                 "Leans Supportive", 
+                 "Supportive",
+                 "% Women Living in County w/o Provider"), 
+  Estimate = c("Estimate", 
+               hostility_adj_model$coefficients[1], 
+               hostility_adj_model$coefficients[2],
+               hostility_adj_model$coefficients[3],
+               hostility_adj_model$coefficients[4],
+               hostility_adj_model$coefficients[5],
+               hostility_adj_model$coefficients[6]), 
+  P_value = c("P-value", 
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][1], 
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][2],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][3],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][4],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][5],
+              summary(hostility_adj_model)$coefficients[,"Pr(>|t|)"][6]),
+  add_colnames = FALSE
+)
+hostility_bc_abortion_tbl %>% 
+  set_bold(1, everywhere, TRUE) %>% 
+  set_bottom_border(1, everywhere, 2) %>% 
+  set_align(everywhere, 2, 'right') %>% 
+  set_right_padding(10) %>% 
+  set_left_padding(10) %>% 
+  set_width(0.35) %>% 
+  set_number_format(3)
 ```
 
 
-# ALL Discussion and Conclusion
+# Discussion and Conclusion
+
+-LINH AND MAGGIE Descriptive statistic interpretations (Graphs + Maps)  
+-MAGGIE Regression model interpretations  
+-RACHEL Why we didn't include models with teen birth rate (tying into study limitations of this analysis being underpowered)  
+
+-NANCY Future research: finer resolution spatial data or individual-level data
