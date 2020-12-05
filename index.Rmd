@@ -29,8 +29,8 @@ For a brief overview of our website, view our screencast [here](https://vimeo.co
 ```{r include = FALSE, message = FALSE, warning = FALSE}
 library("vembedr")
 ```
-```{r}
-embed_url("https://vimeo.com/487630185")
-```
+
+`r embed_url("https://vimeo.com/487630185")`
+
 
 
