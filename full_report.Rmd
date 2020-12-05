@@ -11,6 +11,7 @@ output:
 
 ```{r include = FALSE}
 library(tidyverse)
+library(readr)
 library(leaflet)
 library(sf)
 library(rgdal)
@@ -40,17 +41,119 @@ scale_fill_discrete = scale_fill_viridis_d
 For this project, we aim to examine state-level sociodemographic factors that may influence abortion rate. State family planning policies vary widely, with some states more hostile to women attempting to access an abortion, and others more supportive (Nash 2019). One study showed that of women who received a nonhospital abortion, 24% traveled at least 50 miles from their home to an abortion facility (Henshaw 1995). We plan to investigate the relationship between hostility towards abortion, within-county abortion provider access, and abortion rate.  We are interested in visualizing these data to hopefully help disseminate this information in a digestible way to inform outreach/education strategies and policy.
 
 # Related Work
-We are additionally interested in the relationship between teen birth rate, public expenditures for contraception, and hostility. 
 
 # Research Questions
 * Is there a relationship between hostility towards abortion and access to abortion?
 * Is there a relationship between hostility towards abortion and abortion rates by state?
 * Is there a relationship between abortion access and abortion rates by state?
-* Is there a relationship between abortion access and hostility towards abortion with abortion rates by state?
+* Is there a relationship between both abortion access & hostility towards abortion with abortion rates by state?
 
-# Data Sources
+* We are additionally interested in the relationship between teen birth rate, public expenditures for contraception, and hostility. 
+
+# Data 
 
 The data are pulled from the Guttmacher Institute, which is a research organization founded in 1968 working to study, educate, and advance sexual and reproductive health and rights. The Guttmacher Institute Data Center provides public-access birth, abortion, and contraceptive use demographic data at the national and state levels, and contraceptive use data only at the county level. Since we are interested in multiple study outcomes—abortion rates, contraceptive funding/access, and teen birth rates—we pulled these data at the finest resolution possible, aggregated at the state level, for all 50 US States.
+
+## Loading and Tidying Data
+
+We pulled in state-level data directly from the [Guttmacher Institute Data Center (2014-2017)](https://data.guttmacher.org/states) as a .csv file, read it in and tidied it as follows:
+
+```{r}
+data = 
+  read_csv("./data/112420_guttmacher data.csv")%>%
+  select(state_id, measure_name, datum)%>%
+  mutate(datum = as.double(datum))%>%
+  pivot_wider(names_from = measure_name, values_from = datum)%>%
+  janitor:: clean_names()%>%
+  rename(public_expenditures = total_reported_public_expenditures_for_family_planning_client_services_in_000s_of_dollars,
+         no_women_need_public_expenditure = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_aged_13_44)%>%
+  mutate(
+    public_expenditures=as.double(public_expenditures),
+    no_women_need_public_expenditure=as.double(no_women_need_public_expenditure),
+    expenditure_rate = public_expenditures/no_women_need_public_expenditure
+  )                                                                                #create expenditure_rate variable
+```
+
+
+We then manually extracted state-level data on hostility around abortion rights provided by the [Guttmacher Institute](https://www.guttmacher.org/sites/default/files/article_files/hostile_and_supportive_state_abortion_laws_1-24-2020.pdf) into Microsoft Excel, exported it as a .csv file and read it in:
+
+```{r}
+hostility =
+  read_csv("./data/state_hostility.csv")%>%
+  separate('state_id,Hostility',c('state_id', 'hostility'), sep=",")%>%
+  mutate(
+    hostility = fct_relevel(hostility, c("hostile", "leans_hostile", "middle_ground", "leans_supportive", "supportive"))
+  )
+```
+
+
+We then merged these two datasets into a single dataset, and saved it into our data folder for ease of use:
+
+```{r}
+merge_data = 
+  merge(data, hostility, by = "state_id")%>%
+  select(-percent_of_pregnancies_wanted_later_or_unwanted_ending_in_abortion, -percent_of_pregnancies_wanted_later_or_unwanted_ending_in_birth
+         )%>%
+  rename(counties_no_provider = percent_of_counties_without_a_known_abortion_provider,
+         percent_abortion = percent_of_pregnancies_ending_in_abortion,
+         percent_birth = percent_of_pregnancies_ending_in_birth, 
+         percent_medicaid = percent_of_women_aged_15_44_covered_by_medicaid,
+         percent_women_no_provider = percent_of_women_aged_15_44_living_in_a_county_without_an_abortion_provider, 
+         percent_uninsured = percent_of_women_aged_15_44_who_are_uninsured,
+         percent_bc_18_49 = percent_of_women_aged_18_49_using_contraceptives,
+         abortion_rate_15_17_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_17_by_state_of_residence,
+         abortion_rate_15_19_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_19_by_state_of_residence,
+         abortion_rate_15_44_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_15_44_by_state_of_residence,
+         abortion_rate_18_19_state = abortion_rate_the_no_of_abortions_per_1_000_women_aged_18_19_by_state_of_residence,
+         birthrate_15_17_state = birthrate_the_no_of_births_per_1_000_women_aged_15_17_by_state_of_residence,
+         birthrate_15_19_state = birthrate_the_no_of_births_per_1_000_women_aged_15_19_by_state_of_residence,
+         birthrate_18_19_state = birthrate_the_no_of_births_per_1_000_women_aged_18_19_by_state_of_residence,
+         need_bc_hisp_20_44 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_hispanic_aged_20_44_and_below_250_percent_of_the_federal_poverty_level,
+         need_bc_hisp_younger_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_hispanic_younger_than_20,
+         need_bc_13_44 = no_women_need_public_expenditure,
+         need_bc_black_20_44 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_black_aged_20_44_and_below_250_percent_of_the_federal_poverty_level,
+         need_bc_black_under_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_black_younger_than_20, 
+         need_bc_white_20_44 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_white_aged_20_44_and_below_250_percent_of_the_federal_poverty_level,
+         need_bc_white_under_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_non_hispanic_white_younger_than_20, 
+         need_bc_under_20 = no_of_women_who_likely_need_public_support_for_contraceptive_services_and_supplies_younger_than_20,
+         total_expend_abortion = total_reported_public_expenditures_for_abortions_in_000s_of_dollars
+         )%>%
+    separate('abortion_rate_15_19_state',c(NA, 'abortion_rate_15_19_state'), sep=",")%>%
+    separate('abortion_rate_15_44_state',c(NA, 'abortion_rate_15_44_state'), sep=",")%>% 
+  separate('birthrate_15_19_state',c(NA, 'birthrate_15_19_state'), sep=",")%>%
+    mutate(
+    abortion_rate_15_19_state = str_replace_all(abortion_rate_15_19_state, "\\)", ""),
+    abortion_rate_15_44_state = str_replace_all(abortion_rate_15_44_state, "\\)", ""),
+    birthrate_15_19_state = str_replace_all(birthrate_15_19_state, "\\)", "")
+    )%>%
+    mutate(
+    abortion_rate_15_19_state = as.numeric(abortion_rate_15_19_state),
+    abortion_rate_15_44_state = as.numeric(abortion_rate_15_44_state),
+    birthrate_15_19_state = as.numeric(birthrate_15_19_state),
+    counties_no_provider = as.numeric(counties_no_provider),
+    percent_abortion = as.numeric(percent_abortion),
+   percent_birth = as.numeric(percent_birth),
+    percent_medicaid = as.numeric(percent_medicaid),
+    percent_women_no_provider = as.numeric(percent_women_no_provider),
+    percent_uninsured = as.numeric(percent_uninsured),
+    percent_bc_18_49 = as.numeric(percent_bc_18_49),
+    abortion_rate_15_17_state = as.numeric(abortion_rate_15_17_state),
+    abortion_rate_15_19_state = as.numeric(abortion_rate_15_19_state),
+    abortion_rate_18_19_state = as.numeric(abortion_rate_18_19_state),
+    birthrate_15_17_state = as.numeric(birthrate_15_17_state),
+     birthrate_18_19_state = as.numeric( birthrate_18_19_state),
+    need_bc_hisp_20_44 = as.numeric(need_bc_hisp_20_44),
+    need_bc_hisp_younger_20 = as.numeric(need_bc_hisp_younger_20),
+     need_bc_black_20_44 = as.numeric( need_bc_black_20_44),
+    need_bc_black_under_20 = as.numeric(need_bc_black_under_20),
+   need_bc_white_20_44 = as.numeric(need_bc_white_20_44),
+    need_bc_white_under_20 = as.numeric(need_bc_white_under_20),
+    need_bc_under_20  = as.numeric(need_bc_under_20),
+   total_expend_abortion  = as.numeric(total_expend_abortion)
+    )
+write_csv(merge_data, "./data/merge_data.csv")
+
+```
 
 # Exploratory Analysis
 
@@ -73,7 +176,6 @@ merge_data %>%
   )
 
 ```
-
 
 ### Rate of abortion by state
 
